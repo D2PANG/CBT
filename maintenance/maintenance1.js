@@ -11,7 +11,7 @@ let allQuestions = [
         question: "라디에이터 코어 막힘율을 구하는 공식은? (수정 필요/문제에 사진 들어가야함)", //수정필요 (문제에 사진 들어가야함)
         options: ["4", "1", "3","2"],
         answer: 2,
-        explain: "**<a href='https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471252658&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3096' target='_blank'>라디에이터 코어 막힘율 해설 보러가기</a>**"
+        explain: "<a href='https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471252658&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3096' target='_blank'>문제 해설</a>"
     },
     {
         question: "브레이크 계통에 공기가 혼입되었을 때 공기빼기 작업방법으로 틀린 것은?",
@@ -41,7 +41,7 @@ let allQuestions = [
         question: "저위발열량이 10500kcal/kg의 경유를 사용하고 제동 열효율이 30%인 디젤기관의 연료소비율(g/PS-h)은 약 얼마인가?",
         options: ["210", "200", "600","620"],
         answer: 1,
-        explain: "https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471263595&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3099"
+        explain: "<a href='https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471263595&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3099' target='_blank'>문제 해설</a>"
     },
     {
         question: "충전회로 내에서 과충전을 방지하기 위해 사용하는 다이오드는?",
@@ -59,7 +59,7 @@ let allQuestions = [
         question: "조향핸들이 1회전 하였을 때 피트먼암이 40° 움직였다. 조향기어비는?",
         options: ["9:1", "4.5:1", "45:1","0.9:1"],
         answer: 0,
-        explain: "https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471231767&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3099"
+        explain: "<a href='https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471231767&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3099' target='_blank'>문제 해설</a>"
     },
     {
         question: "엔진의 출력을 일정하게 하였을 때 가속성능을 향상시키기 위한 것이 아닌 것은?",
@@ -125,7 +125,7 @@ let allQuestions = [
         question: "4기통 디젤엔진의 예열회로를 점검한 결과, 예열플러그 1개당 저항이 15옴 이었다. 회로를 직렬연결이며, 12V일 때 회로에 흐르는 전류는?",
         options: ["2 A", "20 A", "0.2 A","5 A"],
         answer: 2,
-        explain: "https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471217253&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3095"
+        explain: "<a href='https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471217253&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3095' target='_blank'>문제 해설</a>"
     },
     {
         question: "시동 전 연료장치의 육안 점검 방법으로 거리가 먼 것은?",
@@ -155,7 +155,7 @@ let allQuestions = [
         question: "기관의 회전수가 5500rpm이고 기관출력이 70PS이며 총감속비가 5.5일 때 뒤 액슬축의 회전수는?",
         options: ["1000 rpm", "800rpm", "1200rpm","1400rpm"],
         answer: 0,
-        explain: "https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471264647&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3099"
+        explain: "<a href='https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471264647&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3099' target='_blank'>문제 해설</a>"
     },
     {
         question: "열안전성이 우수하고 내산화성, 내수성이 좋으며, 사용온도 범위가 넓고 사용범위가 광범위하게 사용되는 그리스는?",
@@ -209,7 +209,7 @@ let allQuestions = [
         question: "수동변속기의 고장 유무를 점검하는 방법으로 거리가 먼 것은?",
         options: ["오일이 새는 곳이 없는지 점검한다.", "조작기구의 헐거움이 있는지 점검한다.", "소음 발생과 기어의 물림이 빠지는지 점검한다.","헬리컬 기어보다 측압을 많이 받는 스퍼기어는 측압와셔 마모를 점검한다."],
         answer: 3,
-        explain: "https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471226345&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3099"
+        explain: "<a href='https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471226345&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3099' target='_blank'>문제 해설</a>"
     },
     {
         question: "유압식 동력조향장치(power steering system)의 구성품이 아닌 것은?",
@@ -233,7 +233,7 @@ let allQuestions = [
         question: "실린더의 안지름이 80mm이고, 행정이 84mm인 4 실린더 엔진의 총 배기량은?",
         options: ["약 1688 cc", "약 1200 cc", "약 1370 cc","약 1800 cc"],
         answer: 0,
-        explain: "https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471236827&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3099"
+        explain: "<a href='https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471236827&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3099' target='_blank'>문제 해설</a>"
     },
     {
         question: "버튼엔진 시동시스템에 회로 점검 시 점검사항으로 틀린 것은?",
@@ -275,13 +275,13 @@ let allQuestions = [
         question: "타이어 규격이 “230/60 R 18”일 때 단면의 높이(mm)는 얼마인가?",
         options: ["38mm", "128mm", "148mm","138mm"],
         answer: 3,
-        explain: "https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471246743&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3096"
+        explain: "<a href='https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471246743&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3096' target='_blank'>문제 해설</a>"
     },
     {
         question: "자동차 등화장치에서 12V 축전지에 30W의 전구를 사용하였다면 저항값은?",
         options: ["5.4옴", "6.3옴", "7.3옴","4.8옴"],
         answer: 3,
-        explain: "https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471259413&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3096"
+        explain: "<a href='https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471259413&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3096' target='_blank'>문제 해설</a>"
     },
     {
         question: "윤활유의 역할이 아닌 것은?",
@@ -293,7 +293,7 @@ let allQuestions = [
         question: "스프링 상수가 4kgf/mm인 코일 스프링을 6cm 압축하는데 필요한 힘은?",
         options: ["0.067 kgf", "24 kgf", "15 kgf","240 kgf"],
         answer: 3,
-        explain: "https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471237936&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3099"
+        explain: "<a href='https://blog.naver.com/PostView.naver?blogId=ddsp0201&Redirect=View&logNo=223471237936&categoryNo=11&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=3099' target='_blank'>문제 해설</a>"
     },
     {
         question: "축전지의 취급 시 틀린 것은?",
