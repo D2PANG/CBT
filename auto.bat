@@ -1,6 +1,6 @@
 @echo off
 
-REM "C:\Users\user\Desktop\code"
+REM "~\Desktop\code"
 cd /d "%~dp0" 
 git init
 
