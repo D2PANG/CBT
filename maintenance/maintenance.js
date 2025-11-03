@@ -1,16 +1,21 @@
 import { maintenance1Questions } from './maintenance1.js';
-/*
 import { maintenance2Questions } from './maintenance2.js';
 import { maintenance3Questions } from './maintenance3.js';
 import { maintenance4Questions } from './maintenance4.js';
 import { maintenance5Questions } from './maintenance5.js';
 import { maintenance6Questions } from './maintenance6.js';
 import { maintenance7Questions } from './maintenance7.js';
-*/
+
 
 // 배열 합치기
 let combinedQuestions =
-  [...maintenance1Questions];
+  [...maintenance1Questions,
+  ...maintenance2Questions,
+  ...maintenance3Questions,
+  ...maintenance4Questions,
+  ...maintenance5Questions,
+  ...maintenance6Questions, 
+  ...maintenance7Questions];
 
 // question 기준으로 중복 제거
 let uniqueQuestionsMap = new Map();
