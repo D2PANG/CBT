@@ -3,47 +3,61 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
+    background-color: #f4f7f6; /* 배경색 추가 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 1000px;
+    padding: 20px;
 }
 
 h1 {
-    margin-top: 50px;
+    margin-bottom: 40px;
+    color: #007bff;
 }
 
-.exam-container {
+/* --- 버전 선택 배너 스타일 --- */
+.banner-wrapper {
     display: flex;
+    gap: 30px;
     justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 50px;
-    gap: 20px;
 }
 
-.exam-card {
-    width: 250px;
-    height: 120px;
-    background-color: #4CAF50;
-    color: white;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.banner {
+    flex: 1;
+    padding: 40px 20px;
+    border-radius: 15px;
     cursor: pointer;
-    border-radius: 10px;
-    transition: 0.3s;
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.exam-card:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
+.banner:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* 🚨 블러 효과 CSS */
+.pc-color {
+    background-color: #e6f7ff;
+    border: 3px solid #007bff;
+}
+
+.mobile-color {
+    background-color: #fff0e6;
+    border: 3px solid #ff9900;
+}
+
+/* --- 비밀번호 모달/블러 스타일 --- */
 .blur {
     filter: blur(5px); 
     pointer-events: none; 
     transition: filter 0.3s ease-in-out; 
 }
 
-/* 팝업 모달 스타일 */
 .modal {
     display: none; 
     position: fixed; 
@@ -59,7 +73,7 @@ h1 {
 
 .modal-content {
     background-color: #fefefe;
-    margin: 5% auto; 
+    margin: 10% auto; /* 중앙에 배치 */
     padding: 20px;
     border: 1px solid #888;
     width: 80%; 
@@ -97,4 +111,22 @@ h1 {
     color: red;
     margin-top: 10px;
     display: none;
+}
+
+/* 📱 모바일 반응형: 화면 너비 600px 이하 */
+@media (max-width: 600px) {
+    .banner-wrapper {
+        flex-direction: column; 
+        gap: 20px;
+    }
+
+    .banner {
+        width: 90%;
+        margin: 0 auto;
+        padding: 30px 15px;
+    }
+    
+    .modal-content {
+        margin: 15% auto; 
+    }
 }

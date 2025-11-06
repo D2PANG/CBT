@@ -1,0 +1,39 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+}
+
+.round-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.round-card {
+    background-color: #4CAF50;
+    color: white;
+    
+    /* ✅ 가장 긴 글자를 기준으로 너비 고정 (예: 300px) */
+    width: 300px; 
+    max-width: 300px;
+    
+    padding: 30px 10px; /* 좌우 패딩을 줄여 너비 고정에 맞춤 */
+    
+    font-size: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    
+    /* 텍스트가 중앙에 정렬되도록 추가 */
+    text-align: center;
+    display: flex; /* 텍스트 정렬을 위해 flex 속성 사용 */
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box; /* 패딩이 너비에 포함되도록 설정 */
+}
+
+.round-card:hover {
+    background-color: #45a049;
+}
