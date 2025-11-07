@@ -57,13 +57,3 @@ h1 {
         background-color: #4CAF50; /* 원래 색상 유지 */
     }
 }
-
-/* 5. "전체 랜덤" 버튼만 빨간색으로 변경 */
-.random-card {
-    background-color: #f44336;
-}
-
-/* 6. "전체 랜덤" 버튼 색상 변경 */
-.random-card:hover {
-    background-color: #d32f2f;
-}

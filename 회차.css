@@ -12,6 +12,17 @@ h1 {
     font-size: 1.5em; /* 글꼴 크기도 줄입니다 */
 }
 
+.random-wrapper {
+    display: flex;
+    justify-content: center;
+    /* 핵심 수정: 무조건 세로 1열로 배치 */
+    flex-direction: column; 
+    /* 세로로 쌓인 아이템들을 수평 중앙에 정렬 */
+    align-items: center; 
+    margin-top: 30px; /* h1과 동일하게 마진을 줄입니다 */
+    gap: 20px;
+}
+
 .round-container {
     display: flex;
     justify-content: center;
