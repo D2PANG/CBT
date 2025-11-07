@@ -1,11 +1,15 @@
 import { industry032801 } from './industry_주행안전문제.js';
 import { industry032802 } from './industry_주행안전문제.js';
 import { industry032803 } from './industry_주행안전문제.js';
+import { industry032804 } from './industry_주행안전문제.js';
+import { industry032805 } from './industry_주행안전문제.js';
 
 const ALL_QUESTIONS = [
     ...industry032801,
     ...industry032802,
-    ...industry032803
+    ...industry032803,
+    ...industry032804,
+    ...industry032805
 ];
 
 // 문제/보기 랜덤 섞기
@@ -136,6 +140,11 @@ function submitQuiz() {
     document.getElementById("timer").textContent = "";
  
     let score = 0;
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
     questions.forEach((q, i) => {
       const questionDiv = document.getElementsByClassName("question")[i];
       const explainDiv = questionDiv.querySelector(".explain");

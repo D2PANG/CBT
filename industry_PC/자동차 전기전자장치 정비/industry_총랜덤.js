@@ -1,41 +1,65 @@
 import { industry010301 } from './0103자동차 냉난방장치정비/industry_냉난방문제.js';
 import { industry010302 } from './0103자동차 냉난방장치정비/industry_냉난방문제.js';
 import { industry010303 } from './0103자동차 냉난방장치정비/industry_냉난방문제.js';
+import { industry010304 } from './0103자동차 냉난방장치정비/industry_냉난방문제.js';
+import { industry010305 } from './0103자동차 냉난방장치정비/industry_냉난방문제.js';
 import { industry010401 } from './0104자동차 전기전자회로분석/industry_회로분석문제.js';
 import { industry010402 } from './0104자동차 전기전자회로분석/industry_회로분석문제.js';
 import { industry010403 } from './0104자동차 전기전자회로분석/industry_회로분석문제.js';
+import { industry010404 } from './0104자동차 전기전자회로분석/industry_회로분석문제.js';
+import { industry010405 } from './0104자동차 전기전자회로분석/industry_회로분석문제.js';
 import { industry010501 } from './0105자동차 편의장치 정비/industry_편의장치문제.js';
 import { industry010502 } from './0105자동차 편의장치 정비/industry_편의장치문제.js';
 import { industry010503 } from './0105자동차 편의장치 정비/industry_편의장치문제.js';
+import { industry010504 } from './0105자동차 편의장치 정비/industry_편의장치문제.js';
+import { industry010505 } from './0105자동차 편의장치 정비/industry_편의장치문제.js';
 import { industry010701 } from './0107자동차 주행안전장치정비/industry_주행안전문제.js';
 import { industry010702 } from './0107자동차 주행안전장치정비/industry_주행안전문제.js';
 import { industry010703 } from './0107자동차 주행안전장치정비/industry_주행안전문제.js';
+import { industry010704 } from './0107자동차 주행안전장치정비/industry_주행안전문제.js';
+import { industry010705 } from './0107자동차 주행안전장치정비/industry_주행안전문제.js';
 import { industry010801 } from './0108자동차 네트워크통신장비정비/industry_네트워크문제.js';
 import { industry010802 } from './0108자동차 네트워크통신장비정비/industry_네트워크문제.js';
 import { industry010803 } from './0108자동차 네트워크통신장비정비/industry_네트워크문제.js';
+import { industry010804 } from './0108자동차 네트워크통신장비정비/industry_네트워크문제.js';
+import { industry010805 } from './0108자동차 네트워크통신장비정비/industry_네트워크문제.js';
 import { industry010901 } from './0109하이브리드자동차 특화시스템정비/industry_하이브리드문제.js';
 import { industry010902 } from './0109하이브리드자동차 특화시스템정비/industry_하이브리드문제.js';
 import { industry010903 } from './0109하이브리드자동차 특화시스템정비/industry_하이브리드문제.js';
+import { industry010904 } from './0109하이브리드자동차 특화시스템정비/industry_하이브리드문제.js';
+import { industry010905 } from './0109하이브리드자동차 특화시스템정비/industry_하이브리드문제.js';
 
 const ALL_QUESTIONS = [
     ...industry010301,
     ...industry010302,
     ...industry010303,
+    ...industry010304,
+    ...industry010305,
     ...industry010401,
     ...industry010402,
     ...industry010403,
+    ...industry010404,
+    ...industry010405,
     ...industry010501,
     ...industry010502,
     ...industry010503,
+    ...industry010504,
+    ...industry010505,
     ...industry010701,
     ...industry010702,
     ...industry010703,
+    ...industry010704,
+    ...industry010705,
     ...industry010801,
     ...industry010802,
     ...industry010803,
+    ...industry010804,
+    ...industry010805,
     ...industry010901,
     ...industry010902,
-    ...industry010903
+    ...industry010903,
+    ...industry010904,
+    ...industry010905
 ];
 
 // 문제/보기 랜덤 섞기
@@ -166,6 +190,11 @@ function submitQuiz() {
     document.getElementById("timer").textContent = "";
  
     let score = 0;
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+    
     questions.forEach((q, i) => {
       const questionDiv = document.getElementsByClassName("question")[i];
       const explainDiv = questionDiv.querySelector(".explain");

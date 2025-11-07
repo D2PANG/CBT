@@ -1,11 +1,15 @@
 import { industry020201 } from './industry_냉각장치문제.js';
 import { industry020202 } from './industry_냉각장치문제.js';
 import { industry020203 } from './industry_냉각장치문제.js';
+import { industry020204 } from './industry_냉각장치문제.js';
+import { industry020205 } from './industry_냉각장치문제.js';
 
 const ALL_QUESTIONS = [
     ...industry020201,
     ...industry020202,
-    ...industry020203
+    ...industry020203,
+    ...industry020204,
+    ...industry020205
 ];
 
 // 문제/보기 랜덤 섞기
@@ -136,6 +140,11 @@ function submitQuiz() {
     document.getElementById("timer").textContent = "";
  
     let score = 0;
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+
     questions.forEach((q, i) => {
       const questionDiv = document.getElementsByClassName("question")[i];
       const explainDiv = questionDiv.querySelector(".explain");

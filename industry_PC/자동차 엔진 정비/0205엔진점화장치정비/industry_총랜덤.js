@@ -1,11 +1,15 @@
-import { industry020501 } from './industry_엔진점화문제.js';
-import { industry020502 } from './industry_엔진점화문제.js';
-import { industry020503 } from './industry_엔진점화문제.js';
+import { industry020501 } from './industry_엔진점화장치문제.js';
+import { industry020502 } from './industry_엔진점화장치문제.js';
+import { industry020503 } from './industry_엔진점화장치문제.js';
+import { industry020504 } from './industry_엔진점화장치문제.js';
+import { industry020505 } from './industry_엔진점화장치문제.js';
 
 const ALL_QUESTIONS = [
     ...industry020501,
     ...industry020502,
-    ...industry020503
+    ...industry020503,
+    ...industry020504,
+    ...industry020505
 ];
 
 // 문제/보기 랜덤 섞기
@@ -136,6 +140,11 @@ function submitQuiz() {
     document.getElementById("timer").textContent = "";
  
     let score = 0;
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
     questions.forEach((q, i) => {
       const questionDiv = document.getElementsByClassName("question")[i];
       const explainDiv = questionDiv.querySelector(".explain");
@@ -180,14 +189,14 @@ function submitQuiz() {
     // 상단 배너에 점수 표시
     const status = document.getElementById("status");
     status.classList.add("center");
-    status.innerHTML = `<span id="scoreDisplay">엔진점화장치정비 전체랜덤 총점: ${score}/${questions.length}</span>`;
+    status.innerHTML = `<span id="scoreDisplay">엔진점화장치장치정비 전체랜덤 총점: ${score}/${questions.length}</span>`;
  
     // 제출 버튼 제거
     document.getElementById("submitBtn").style.display = "none";
  
     // 결과창 표시
     const resultDiv = document.getElementById("result");
-    resultDiv.innerHTML = `<h2>엔진점화장치정비 전체랜덤 총점: ${score}/${questions.length}</h2>`;
+    resultDiv.innerHTML = `<h2>엔진점화장치장치정비 전체랜덤 총점: ${score}/${questions.length}</h2>`;
 }
  
 // -----------------------------

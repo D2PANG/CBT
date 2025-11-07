@@ -1,11 +1,15 @@
 import { industry030801 } from './industry_유압식현가문제.js';
 import { industry030802 } from './industry_유압식현가문제.js';
 import { industry030803 } from './industry_유압식현가문제.js';
+import { industry030804 } from './industry_유압식현가문제.js';
+import { industry030805 } from './industry_유압식현가문제.js';
 
 const ALL_QUESTIONS = [
     ...industry030801,
     ...industry030802,
-    ...industry030803
+    ...industry030803,
+    ...industry030804,
+    ...industry030805
 ];
 
 // 문제/보기 랜덤 섞기
@@ -136,6 +140,11 @@ function submitQuiz() {
     document.getElementById("timer").textContent = "";
  
     let score = 0;
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
     questions.forEach((q, i) => {
       const questionDiv = document.getElementsByClassName("question")[i];
       const explainDiv = questionDiv.querySelector(".explain");

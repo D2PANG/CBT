@@ -1,11 +1,15 @@
 import { industry010401 } from './industry_회로분석문제.js';
 import { industry010402 } from './industry_회로분석문제.js';
 import { industry010403 } from './industry_회로분석문제.js';
+import { industry010404 } from './industry_회로분석문제.js';
+import { industry010405 } from './industry_회로분석문제.js';
 
 const ALL_QUESTIONS = [
     ...industry010401,
     ...industry010402,
-    ...industry010403
+    ...industry010403,
+    ...industry010404,
+    ...industry010405
 ];
 
 // 문제/보기 랜덤 섞기
@@ -136,6 +140,11 @@ function submitQuiz() {
     document.getElementById("timer").textContent = "";
  
     let score = 0;
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
     questions.forEach((q, i) => {
       const questionDiv = document.getElementsByClassName("question")[i];
       const explainDiv = questionDiv.querySelector(".explain");

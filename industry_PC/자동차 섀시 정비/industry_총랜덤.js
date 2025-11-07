@@ -6,21 +6,33 @@ import { industry030305 } from './0303자동변속기정비/industry_자동변�
 import { industry030801 } from './0308유압식현가장치정비/industry_유압식현가문제.js';
 import { industry030802 } from './0308유압식현가장치정비/industry_유압식현가문제.js';
 import { industry030803 } from './0308유압식현가장치정비/industry_유압식현가문제.js';
+import { industry030804 } from './0308유압식현가장치정비/industry_유압식현가문제.js';
+import { industry030805 } from './0308유압식현가장치정비/industry_유압식현가문제.js';
 import { industry030901 } from './0309전자제어현가장치정비/industry_전자제어현가문제.js';
 import { industry030902 } from './0309전자제어현가장치정비/industry_전자제어현가문제.js';
 import { industry030903 } from './0309전자제어현가장치정비/industry_전자제어현가문제.js';
+import { industry030904 } from './0309전자제어현가장치정비/industry_전자제어현가문제.js';
+import { industry030905 } from './0309전자제어현가장치정비/industry_전자제어현가문제.js';
 import { industry032401 } from './0324휠타이어얼라인먼트정비/industry_얼라인먼트문제.js';
 import { industry032402 } from './0324휠타이어얼라인먼트정비/industry_얼라인먼트문제.js';
 import { industry032403 } from './0324휠타이어얼라인먼트정비/industry_얼라인먼트문제.js';
+import { industry032404 } from './0324휠타이어얼라인먼트정비/industry_얼라인먼트문제.js';
+import { industry032405 } from './0324휠타이어얼라인먼트정비/industry_얼라인먼트문제.js';
 import { industry032601 } from './0326조향장치정비/industry_조향장치문제.js';
 import { industry032602 } from './0326조향장치정비/industry_조향장치문제.js';
 import { industry032603 } from './0326조향장치정비/industry_조향장치문제.js';
+import { industry032604 } from './0326조향장치정비/industry_조향장치문제.js';
+import { industry032605 } from './0326조향장치정비/industry_조향장치문제.js';
 import { industry032701 } from './0327제동장치정비/industry_제동장치문제.js';
 import { industry032702 } from './0327제동장치정비/industry_제동장치문제.js';
 import { industry032703 } from './0327제동장치정비/industry_제동장치문제.js';
+import { industry032704 } from './0327제동장치정비/industry_제동장치문제.js';
+import { industry032705 } from './0327제동장치정비/industry_제동장치문제.js';
 import { industry032801 } from './0328주행안전보조시스템정비/industry_주행안전문제.js';
 import { industry032802 } from './0328주행안전보조시스템정비/industry_주행안전문제.js';
 import { industry032803 } from './0328주행안전보조시스템정비/industry_주행안전문제.js';
+import { industry032804 } from './0328주행안전보조시스템정비/industry_주행안전문제.js';
+import { industry032805 } from './0328주행안전보조시스템정비/industry_주행안전문제.js';
 
 const ALL_QUESTIONS = [
     ...industry030301,
@@ -31,21 +43,33 @@ const ALL_QUESTIONS = [
     ...industry030801,
     ...industry030802,
     ...industry030803,
+    ...industry030804,
+    ...industry030805,
     ...industry030901,
     ...industry030902,
     ...industry030903,
+    ...industry030904,
+    ...industry030905,
     ...industry032401,
     ...industry032402,
     ...industry032403,
+    ...industry032404,
+    ...industry032405,
     ...industry032601,
     ...industry032602,
     ...industry032603,
+    ...industry032604,
+    ...industry032605,
     ...industry032701,
     ...industry032702,
     ...industry032703,
+    ...industry032704,
+    ...industry032705,
     ...industry032801,
     ...industry032802,
-    ...industry032803
+    ...industry032803,
+    ...industry032804,
+    ...industry032805
 ];
 
 // 문제/보기 랜덤 섞기
@@ -176,6 +200,11 @@ function submitQuiz() {
     document.getElementById("timer").textContent = "";
  
     let score = 0;
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
     questions.forEach((q, i) => {
       const questionDiv = document.getElementsByClassName("question")[i];
       const explainDiv = questionDiv.querySelector(".explain");

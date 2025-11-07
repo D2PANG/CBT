@@ -1,47 +1,75 @@
 import { industry020101 } from './0201엔진본체정비/industry_엔진본체문제.js';
 import { industry020102 } from './0201엔진본체정비/industry_엔진본체문제.js';
 import { industry020103 } from './0201엔진본체정비/industry_엔진본체문제.js';
+import { industry020104 } from './0201엔진본체정비/industry_엔진본체문제.js';
+import { industry020105 } from './0201엔진본체정비/industry_엔진본체문제.js';
 import { industry020201 } from './0202냉각장치정비/industry_냉각장치문제.js';
 import { industry020202 } from './0202냉각장치정비/industry_냉각장치문제.js';
 import { industry020203 } from './0202냉각장치정비/industry_냉각장치문제.js';
+import { industry020204 } from './0202냉각장치정비/industry_냉각장치문제.js';
+import { industry020205 } from './0202냉각장치정비/industry_냉각장치문제.js';
 import { industry020301 } from './0203윤활장치정비/industry_윤활장치문제.js';
 import { industry020302 } from './0203윤활장치정비/industry_윤활장치문제.js';
 import { industry020303 } from './0203윤활장치정비/industry_윤활장치문제.js';
+import { industry020304 } from './0203윤활장치정비/industry_윤활장치문제.js';
+import { industry020305 } from './0203윤활장치정비/industry_윤활장치문제.js';
 import { industry020401 } from './0204연료장치정비/industry_연료장치문제.js';
 import { industry020402 } from './0204연료장치정비/industry_연료장치문제.js';
 import { industry020403 } from './0204연료장치정비/industry_연료장치문제.js';
+import { industry020404 } from './0204연료장치정비/industry_연료장치문제.js';
+import { industry020405 } from './0204연료장치정비/industry_연료장치문제.js';
 import { industry020501 } from './0205엔진점화장치정비/industry_엔진점화문제.js';
 import { industry020502 } from './0205엔진점화장치정비/industry_엔진점화문제.js';
 import { industry020503 } from './0205엔진점화장치정비/industry_엔진점화문제.js';
+import { industry020504 } from './0205엔진점화장치정비/industry_엔진점화문제.js';
+import { industry020505 } from './0205엔진점화장치정비/industry_엔진점화문제.js';
 import { industry020601 } from './0206흡배기제어장치정비/industry_흡배기문제.js';
 import { industry020602 } from './0206흡배기제어장치정비/industry_흡배기문제.js';
 import { industry020603 } from './0206흡배기제어장치정비/industry_흡배기문제.js';
+import { industry020604 } from './0206흡배기제어장치정비/industry_흡배기문제.js';
+import { industry020605 } from './0206흡배기제어장치정비/industry_흡배기문제.js';
 import { industry020701 } from './0207과급장치정비/industry_과급장치문제.js';
 import { industry020702 } from './0207과급장치정비/industry_과급장치문제.js';
 import { industry020703 } from './0207과급장치정비/industry_과급장치문제.js';
+import { industry020704 } from './0207과급장치정비/industry_과급장치문제.js';
+import { industry020705 } from './0207과급장치정비/industry_과급장치문제.js';
 
 const ALL_QUESTIONS = [
     ...industry020101,
     ...industry020102,
     ...industry020103,
+    ...industry020104,
+    ...industry020105,
     ...industry020201,
     ...industry020202,
     ...industry020203,
+    ...industry020204,
+    ...industry020205,
     ...industry020301,
     ...industry020302,
     ...industry020303,
+    ...industry020304,
+    ...industry020305,
     ...industry020401,
     ...industry020402,
     ...industry020403,
+    ...industry020404,
+    ...industry020405,
     ...industry020501,
     ...industry020502,
     ...industry020503,
+    ...industry020504,
+    ...industry020505,
     ...industry020601,
     ...industry020602,
     ...industry020603,
+    ...industry020604,
+    ...industry020605,
     ...industry020701,
     ...industry020702,
-    ...industry020703
+    ...industry020703,
+    ...industry020704,
+    ...industry020705
 ];
 
 // 문제/보기 랜덤 섞기
@@ -172,6 +200,11 @@ function submitQuiz() {
     document.getElementById("timer").textContent = "";
  
     let score = 0;
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
     questions.forEach((q, i) => {
       const questionDiv = document.getElementsByClassName("question")[i];
       const explainDiv = questionDiv.querySelector(".explain");

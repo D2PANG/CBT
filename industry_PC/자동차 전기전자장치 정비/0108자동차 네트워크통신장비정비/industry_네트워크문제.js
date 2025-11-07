@@ -719,5 +719,11 @@ export const industry010803 = [
     options: ["종단 저항이 없어서", "CAN-Low 선을 사용하여 신호를 접지 기준으로 측정 가능", "통신 속도가 빨라서", "데이터 바이트가 길어서"],
     answer: 1,
     explain: "저속 CAN은 내고장성이 있어 한쪽 선이 단절될 경우, 나머지 선을 이용하여 접지 기준으로 신호를 측정하여 통신을 계속할 수 있습니다."
+  },
+  {
+    question: "CAN FD (Flexible Data-rate) 통신에서 'Flexible Data-rate' 기능이 적용되는 통신 프레임 영역은 주로 어디입니까?",
+    options: ["중재 필드 (Arbitration Field)", "CRC 필드 (Cyclic Redundancy Check)", "데이터 필드 (Data Field) 및 CRC 필드", "응답 필드 (ACK Slot)"],
+    answer: 2,
+    explain: "CAN FD는 중재 필드까지는 기존 CAN과 동일한 낮은 속도(Low-speed)를 유지하여 호환성을 확보하고, 데이터 필드(Data Field)와 CRC 필드 전송 구간에서만 비트 전송률을 높여(High-speed) 전송 속도를 향상시킵니다."
   }
 ];

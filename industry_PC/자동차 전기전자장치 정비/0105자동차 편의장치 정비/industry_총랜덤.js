@@ -1,11 +1,15 @@
 import { industry010501 } from './industry_편의장치문제.js';
 import { industry010502 } from './industry_편의장치문제.js';
 import { industry010503 } from './industry_편의장치문제.js';
+import { industry010504 } from './industry_편의장치문제.js';
+import { industry010505 } from './industry_편의장치문제.js';
 
 const ALL_QUESTIONS = [
     ...industry010501,
     ...industry010502,
-    ...industry010503
+    ...industry010503,
+    ...industry010504,
+    ...industry010505
 ];
 
 // 문제/보기 랜덤 섞기
@@ -136,6 +140,11 @@ function submitQuiz() {
     document.getElementById("timer").textContent = "";
  
     let score = 0;
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+
     questions.forEach((q, i) => {
       const questionDiv = document.getElementsByClassName("question")[i];
       const explainDiv = questionDiv.querySelector(".explain");

@@ -6,15 +6,9 @@ const ALL_QUESTIONS = [...industry010401];
 function shuffleArray(array) {
     return array.sort(() => Math.random() - 0.5);
 }
-<<<<<<< HEAD
- 
-// ✅ 문제 순서 랜덤 + 60문제 제한
-let questions = shuffleArray([...industry010401]).slice(0, 60);
-=======
 
 // ✅ 문제 순서 랜덤 + 60문제 제한
 let questions = shuffleArray([...ALL_QUESTIONS]).slice(0, 60);
->>>>>>> 1058737 (init)
  
 // ✅ 보기 순서도 랜덤화
 questions.forEach((q) => {
@@ -47,14 +41,7 @@ function renderQuiz() {
       div.className = "question";
       
       // 상태 표시 span과 제목 분리
-<<<<<<< HEAD
-      div.innerHTML = `
-          <span id="q-status-${i}" class="q-status"></span>
-          <strong class="q-title">${i + 1}. ${q.question}</strong>
-      `;
-=======
       div.innerHTML = `<span id="q-status-${i}" class="q-status"></span><strong class="q-title">${i + 1}. ${q.question}</strong>`;
->>>>>>> 1058737 (init)
 
       // 1. imagePath 속성이 있는지 확인
         if (q.imagePath) {
@@ -124,6 +111,11 @@ function submitQuiz() {
     document.getElementById("timer").textContent = "";
  
     let score = 0;
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
     questions.forEach((q, i) => {
       const questionDiv = document.getElementsByClassName("question")[i];
       const explainDiv = questionDiv.querySelector(".explain");
@@ -168,22 +160,14 @@ function submitQuiz() {
     // 상단 배너에 점수 표시
     const status = document.getElementById("status");
     status.classList.add("center");
-<<<<<<< HEAD
-    status.innerHTML = `<span id="scoreDisplay">자동변속기 정비 1회차 총점: ${score}/${questions.length}</span>`;
-=======
     status.innerHTML = `<span id="scoreDisplay">전기전자회로분석 1회차 총점: ${score}/${questions.length}</span>`;
->>>>>>> 1058737 (init)
  
     // 제출 버튼 제거
     document.getElementById("submitBtn").style.display = "none";
  
     // 결과창 표시
     const resultDiv = document.getElementById("result");
-<<<<<<< HEAD
-    resultDiv.innerHTML = `<h2>자동변속기 정비 1회차 총점: ${score}/${questions.length}</h2>`;
-=======
     resultDiv.innerHTML = `<h2>전기전자회로분석 1회차 총점: ${score}/${questions.length}</h2>`;
->>>>>>> 1058737 (init)
 }
  
 // -----------------------------
