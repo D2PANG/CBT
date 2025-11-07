@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // -----------------------------
 // 문제 배열 (문제 데이터 포함)
 export const industry030304 = [
@@ -242,6 +243,11 @@ export const industry030304 = [
         explain: "캐리어 입력, 선 기어 출력, 링 기어 고정 조건은 유성 기어의 후진 작동 조건 중 하나입니다. (앞선 문제와 요소 배치만 다름)"
     }
 ];
+=======
+import { industry030304 } from './industry_자동변속문제.js';
+
+const ALL_QUESTIONS = [...industry030304];
+>>>>>>> 1058737 (init)
 
 // 문제/보기 랜덤 섞기
 function shuffleArray(array) {
@@ -399,14 +405,22 @@ function submitQuiz() {
     // 상단 배너에 점수 표시
     const status = document.getElementById("status");
     status.classList.add("center");
+<<<<<<< HEAD
     status.innerHTML = `<span id="scoreDisplay">자동변속기 정비 1회차 총점: ${score}/${questions.length}</span>`;
+=======
+    status.innerHTML = `<span id="scoreDisplay">자동변속기정비 4회차 총점: ${score}/${questions.length}</span>`;
+>>>>>>> 1058737 (init)
  
     // 제출 버튼 제거
     document.getElementById("submitBtn").style.display = "none";
  
     // 결과창 표시
     const resultDiv = document.getElementById("result");
+<<<<<<< HEAD
     resultDiv.innerHTML = `<h2>자동변속기 정비 1회차 총점: ${score}/${questions.length}</h2>`;
+=======
+    resultDiv.innerHTML = `<h2>자동변속기정비 4회차 총점: ${score}/${questions.length}</h2>`;
+>>>>>>> 1058737 (init)
 }
  
 // -----------------------------

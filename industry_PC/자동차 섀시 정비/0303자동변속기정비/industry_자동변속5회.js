@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // -----------------------------
 // 문제 배열 (문제 데이터 포함)
 export const industry030305 = [
@@ -242,6 +243,11 @@ export const industry030305 = [
         explain: "압력 제어 솔레노이드(PCS)는 TCM의 듀티(Duty) 제어 신호를 받아 라인 압력을 연속적으로 변화시킬 수 있어, 클러치 작동 압력을 미세하게 조정하여 변속 충격을 줄이는 역할을 합니다."
     }
 ];
+=======
+import { industry030305 } from './industry_자동변속문제.js';
+
+const ALL_QUESTIONS = [...industry030305];
+>>>>>>> 1058737 (init)
 
 // 문제/보기 랜덤 섞기
 function shuffleArray(array) {
@@ -399,14 +405,22 @@ function submitQuiz() {
     // 상단 배너에 점수 표시
     const status = document.getElementById("status");
     status.classList.add("center");
+<<<<<<< HEAD
     status.innerHTML = `<span id="scoreDisplay">자동변속기 정비 1회차 총점: ${score}/${questions.length}</span>`;
+=======
+    status.innerHTML = `<span id="scoreDisplay">자동변속기정비 5회차 총점: ${score}/${questions.length}</span>`;
+>>>>>>> 1058737 (init)
  
     // 제출 버튼 제거
     document.getElementById("submitBtn").style.display = "none";
  
     // 결과창 표시
     const resultDiv = document.getElementById("result");
+<<<<<<< HEAD
     resultDiv.innerHTML = `<h2>자동변속기 정비 1회차 총점: ${score}/${questions.length}</h2>`;
+=======
+    resultDiv.innerHTML = `<h2>자동변속기정비 5회차 총점: ${score}/${questions.length}</h2>`;
+>>>>>>> 1058737 (init)
 }
  
 // -----------------------------

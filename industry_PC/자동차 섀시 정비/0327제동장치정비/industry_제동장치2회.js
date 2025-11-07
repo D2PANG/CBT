@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // -----------------------------
 // 문제 배열 (문제 데이터 포함)
 export const industry032702 = [
@@ -242,6 +243,11 @@ export const industry032702 = [
     explain: "베이퍼 록(Vapor Lock)은 브레이크액이 고온에서 끓어 증기 기포가 발생하고 이로 인해 제동력이 상실되는 현상입니다. 이를 방지하기 위해 브레이크액은 끓는점(건식 및 습식)이 높아야 합니다."
 }
 ];
+=======
+import { industry032702 } from './industry_제동장치문제.js';
+
+const ALL_QUESTIONS = [...industry032702];
+>>>>>>> 1058737 (init)
 
 // 문제/보기 랜덤 섞기
 function shuffleArray(array) {
@@ -399,14 +405,22 @@ function submitQuiz() {
     // 상단 배너에 점수 표시
     const status = document.getElementById("status");
     status.classList.add("center");
+<<<<<<< HEAD
     status.innerHTML = `<span id="scoreDisplay">자동변속기 정비 1회차 총점: ${score}/${questions.length}</span>`;
+=======
+    status.innerHTML = `<span id="scoreDisplay">제동장치정비 2회차 총점: ${score}/${questions.length}</span>`;
+>>>>>>> 1058737 (init)
  
     // 제출 버튼 제거
     document.getElementById("submitBtn").style.display = "none";
  
     // 결과창 표시
     const resultDiv = document.getElementById("result");
+<<<<<<< HEAD
     resultDiv.innerHTML = `<h2>자동변속기 정비 1회차 총점: ${score}/${questions.length}</h2>`;
+=======
+    resultDiv.innerHTML = `<h2>제동장치정비 2회차 총점: ${score}/${questions.length}</h2>`;
+>>>>>>> 1058737 (init)
 }
  
 // -----------------------------

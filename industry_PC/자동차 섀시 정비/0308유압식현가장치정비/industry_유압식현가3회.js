@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // -----------------------------
 // 문제 배열 (문제 데이터 포함)
 export const industry030803 = [
@@ -266,6 +267,11 @@ export const industry030803 = [
         explain: "발진 지연은 오일 압력, 유량, 클러치 상태 등 변속기 내부의 유압 및 기계적 요소와 관련되며, 엔진 압축 압력과는 직접적인 관련이 적습니다."
     }
 ];
+=======
+import { industry030803 } from './industry_유압식현가문제.js';
+
+const ALL_QUESTIONS = [...industry030803];
+>>>>>>> 1058737 (init)
 
 // 문제/보기 랜덤 섞기
 function shuffleArray(array) {
@@ -423,14 +429,22 @@ function submitQuiz() {
     // 상단 배너에 점수 표시
     const status = document.getElementById("status");
     status.classList.add("center");
+<<<<<<< HEAD
     status.innerHTML = `<span id="scoreDisplay">자동변속기 정비 1회차 총점: ${score}/${questions.length}</span>`;
+=======
+    status.innerHTML = `<span id="scoreDisplay">유압식현가장치정비 3회차 총점: ${score}/${questions.length}</span>`;
+>>>>>>> 1058737 (init)
  
     // 제출 버튼 제거
     document.getElementById("submitBtn").style.display = "none";
  
     // 결과창 표시
     const resultDiv = document.getElementById("result");
+<<<<<<< HEAD
     resultDiv.innerHTML = `<h2>자동변속기 정비 1회차 총점: ${score}/${questions.length}</h2>`;
+=======
+    resultDiv.innerHTML = `<h2>유압식현가장치정비 3회차 총점: ${score}/${questions.length}</h2>`;
+>>>>>>> 1058737 (init)
 }
  
 // -----------------------------

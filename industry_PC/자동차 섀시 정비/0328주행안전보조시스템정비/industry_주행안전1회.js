@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // -----------------------------
 // 문제 배열 (문제 데이터 포함)
 export const industry032801 = [
@@ -242,6 +243,11 @@ export const industry032801 = [
     explain: "리턴 펌프는 릴리스(Release) 시 휠 실린더의 압력을 낮추기 위해 오일을 마스터 실린더(또는 압력 저장 챔버)로 강제 회수하는 역할을 합니다."
   }
 ];
+=======
+import { industry032801 } from './industry_주행안전문제.js';
+
+const ALL_QUESTIONS = [...industry032801];
+>>>>>>> 1058737 (init)
 
 // 문제/보기 랜덤 섞기
 function shuffleArray(array) {
@@ -399,14 +405,22 @@ function submitQuiz() {
     // 상단 배너에 점수 표시
     const status = document.getElementById("status");
     status.classList.add("center");
+<<<<<<< HEAD
     status.innerHTML = `<span id="scoreDisplay">자동변속기 정비 1회차 총점: ${score}/${questions.length}</span>`;
+=======
+    status.innerHTML = `<span id="scoreDisplay">주행안전보조시스템정비 1회차 총점: ${score}/${questions.length}</span>`;
+>>>>>>> 1058737 (init)
  
     // 제출 버튼 제거
     document.getElementById("submitBtn").style.display = "none";
  
     // 결과창 표시
     const resultDiv = document.getElementById("result");
+<<<<<<< HEAD
     resultDiv.innerHTML = `<h2>자동변속기 정비 1회차 총점: ${score}/${questions.length}</h2>`;
+=======
+    resultDiv.innerHTML = `<h2>주행안전보조시스템정비 1회차 총점: ${score}/${questions.length}</h2>`;
+>>>>>>> 1058737 (init)
 }
  
 // -----------------------------

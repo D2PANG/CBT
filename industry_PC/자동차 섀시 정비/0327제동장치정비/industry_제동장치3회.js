@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // -----------------------------
 // 문제 배열 (문제 데이터 포함)
 export const industry032703 = [
@@ -242,6 +243,11 @@ export const industry032703 = [
     explain: "에어 빼기 작업은 유압 회로 내의 공기(에어)를 완전히 배출하여 유압 손실을 방지하는 것이 목적입니다. 공기가 남아있으면 유압이 공기를 압축하는 데 소모되어 제동 페달을 밟았을 때 물렁거리는 스펀지 현상이 나타납니다."
 }
 ];
+=======
+import { industry032703 } from './industry_제동장치문제.js';
+
+const ALL_QUESTIONS = [...industry032703];
+>>>>>>> 1058737 (init)
 
 // 문제/보기 랜덤 섞기
 function shuffleArray(array) {
@@ -399,14 +405,22 @@ function submitQuiz() {
     // 상단 배너에 점수 표시
     const status = document.getElementById("status");
     status.classList.add("center");
+<<<<<<< HEAD
     status.innerHTML = `<span id="scoreDisplay">자동변속기 정비 1회차 총점: ${score}/${questions.length}</span>`;
+=======
+    status.innerHTML = `<span id="scoreDisplay">제동장치정비 3회차 총점: ${score}/${questions.length}</span>`;
+>>>>>>> 1058737 (init)
  
     // 제출 버튼 제거
     document.getElementById("submitBtn").style.display = "none";
  
     // 결과창 표시
     const resultDiv = document.getElementById("result");
+<<<<<<< HEAD
     resultDiv.innerHTML = `<h2>자동변속기 정비 1회차 총점: ${score}/${questions.length}</h2>`;
+=======
+    resultDiv.innerHTML = `<h2>제동장치정비 3회차 총점: ${score}/${questions.length}</h2>`;
+>>>>>>> 1058737 (init)
 }
  
 // -----------------------------

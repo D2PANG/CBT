@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // -----------------------------
 // 문제 배열 (문제 데이터 포함)
 export const industry032803 = [
@@ -242,6 +243,11 @@ export const industry032803 = [
     explain: "AVM 시스템은 각 카메라의 시야각 차이와 위치 때문에 영상이 왜곡됩니다. 차량 주변에 패턴(바둑판 모양)을 설치한 후, ECU가 이 패턴을 인식하여 4개 카메라 영상의 경계와 각도를 정밀하게 보정(Calibration)하여 자연스러운 탑 뷰 영상을 만듭니다."
 }
 ];
+=======
+import { industry032803 } from './industry_주행안전문제.js';
+
+const ALL_QUESTIONS = [...industry032803];
+>>>>>>> 1058737 (init)
 
 // 문제/보기 랜덤 섞기
 function shuffleArray(array) {
@@ -399,14 +405,22 @@ function submitQuiz() {
     // 상단 배너에 점수 표시
     const status = document.getElementById("status");
     status.classList.add("center");
+<<<<<<< HEAD
     status.innerHTML = `<span id="scoreDisplay">자동변속기 정비 1회차 총점: ${score}/${questions.length}</span>`;
+=======
+    status.innerHTML = `<span id="scoreDisplay">주행안전보조시스템 3회차 총점: ${score}/${questions.length}</span>`;
+>>>>>>> 1058737 (init)
  
     // 제출 버튼 제거
     document.getElementById("submitBtn").style.display = "none";
  
     // 결과창 표시
     const resultDiv = document.getElementById("result");
+<<<<<<< HEAD
     resultDiv.innerHTML = `<h2>자동변속기 정비 1회차 총점: ${score}/${questions.length}</h2>`;
+=======
+    resultDiv.innerHTML = `<h2>주행안전보조시스템 3회차 총점: ${score}/${questions.length}</h2>`;
+>>>>>>> 1058737 (init)
 }
  
 // -----------------------------

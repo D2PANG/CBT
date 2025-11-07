@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // -----------------------------
 // 문제 배열 (문제 데이터 포함)
 export const industry020701 = [
@@ -44,6 +45,11 @@ export const industry020701 = [
         explain: "히터 코어 누설 시 냉각수가 증발하여 실내로 유입되며, 부동액 때문에 달콤한 냄새가 나거나 유리창에 유막이 형성될 수 있습니다."
     }
 ];
+=======
+import { industry020701 } from './industry_과급장치문제.js';
+
+const ALL_QUESTIONS = [...industry020701];
+>>>>>>> 1058737 (init)
 
 // 문제/보기 랜덤 섞기
 function shuffleArray(array) {
@@ -51,7 +57,11 @@ function shuffleArray(array) {
 }
  
 // ✅ 문제 순서 랜덤 + 60문제 제한
+<<<<<<< HEAD
 let questions = shuffleArray([...industry020701]).slice(0, 60);
+=======
+let questions = shuffleArray([...ALL_QUESTIONS]).slice(0, 60);
+>>>>>>> 1058737 (init)
  
 // ✅ 보기 순서도 랜덤화
 questions.forEach((q) => {
@@ -84,10 +94,14 @@ function renderQuiz() {
       div.className = "question";
       
       // 상태 표시 span과 제목 분리
+<<<<<<< HEAD
       div.innerHTML = `
           <span id="q-status-${i}" class="q-status"></span>
           <strong class="q-title">${i + 1}. ${q.question}</strong>
       `;
+=======
+      div.innerHTML = `<span id="q-status-${i}" class="q-status"></span><strong class="q-title">${i + 1}. ${q.question}</strong>`;
+>>>>>>> 1058737 (init)
 
       // 1. imagePath 속성이 있는지 확인
         if (q.imagePath) {
@@ -201,14 +215,22 @@ function submitQuiz() {
     // 상단 배너에 점수 표시
     const status = document.getElementById("status");
     status.classList.add("center");
+<<<<<<< HEAD
     status.innerHTML = `<span id="scoreDisplay">자동변속기 정비 1회차 총점: ${score}/${questions.length}</span>`;
+=======
+    status.innerHTML = `<span id="scoreDisplay">과급장치정비 1회차 총점: ${score}/${questions.length}</span>`;
+>>>>>>> 1058737 (init)
  
     // 제출 버튼 제거
     document.getElementById("submitBtn").style.display = "none";
  
     // 결과창 표시
     const resultDiv = document.getElementById("result");
+<<<<<<< HEAD
     resultDiv.innerHTML = `<h2>자동변속기 정비 1회차 총점: ${score}/${questions.length}</h2>`;
+=======
+    resultDiv.innerHTML = `<h2>과급장치정비 1회차 총점: ${score}/${questions.length}</h2>`;
+>>>>>>> 1058737 (init)
 }
  
 // -----------------------------

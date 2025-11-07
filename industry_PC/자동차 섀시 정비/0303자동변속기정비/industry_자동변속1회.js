@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // -----------------------------
 // 문제 배열 (문제 데이터 포함)
 export const industry030301 = [
@@ -242,6 +243,11 @@ export const industry030301 = [
         explain: "선 기어 입력, 캐리어 고정 조건은 링 기어가 입력 방향과 반대 방향으로 회전하는 후진(Reverse) 조건이 됩니다."
     }
 ];
+=======
+import { industry030301 } from './industry_자동변속문제.js';
+
+const ALL_QUESTIONS = [...industry030301];
+>>>>>>> 1058737 (init)
 
 // 문제/보기 랜덤 섞기
 function shuffleArray(array) {
@@ -249,7 +255,7 @@ function shuffleArray(array) {
 }
  
 // ✅ 문제 순서 랜덤 + 60문제 제한
-let questions = shuffleArray([...industry030301]).slice(0, 60);
+let questions = shuffleArray([...ALL_QUESTIONS]).slice(0, 60);
  
 // ✅ 보기 순서도 랜덤화
 questions.forEach((q) => {
@@ -282,10 +288,7 @@ function renderQuiz() {
       div.className = "question";
       
       // 상태 표시 span과 제목 분리
-      div.innerHTML = `
-          <span id="q-status-${i}" class="q-status"></span>
-          <strong class="q-title">${i + 1}. ${q.question}</strong>
-      `;
+      div.innerHTML = `<span id="q-status-${i}" class="q-status"></span><strong class="q-title">${i + 1}. ${q.question}</strong>`;
 
       // 1. imagePath 속성이 있는지 확인
         if (q.imagePath) {
@@ -399,14 +402,14 @@ function submitQuiz() {
     // 상단 배너에 점수 표시
     const status = document.getElementById("status");
     status.classList.add("center");
-    status.innerHTML = `<span id="scoreDisplay">자동변속기 정비 1회차 총점: ${score}/${questions.length}</span>`;
+    status.innerHTML = `<span id="scoreDisplay">자동변속기정비 1회차 총점: ${score}/${questions.length}</span>`;
  
     // 제출 버튼 제거
     document.getElementById("submitBtn").style.display = "none";
  
     // 결과창 표시
     const resultDiv = document.getElementById("result");
-    resultDiv.innerHTML = `<h2>자동변속기 정비 1회차 총점: ${score}/${questions.length}</h2>`;
+    resultDiv.innerHTML = `<h2>자동변속기정비 1회차 총점: ${score}/${questions.length}</h2>`;
 }
  
 // -----------------------------

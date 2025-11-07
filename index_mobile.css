@@ -7,22 +7,30 @@ body {
 
 h1 {
     margin-top: 50px;
+    /* 모바일에서는 h1 마진을 조금 줄여줍니다 */
+    margin-top: 30px; 
+    font-size: 1.5em; /* 글꼴 크기도 줄입니다 */
 }
 
 .exam-container {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 50px;
+    /* 핵심 수정: 무조건 세로 1열로 배치 */
+    flex-direction: column; 
+    /* 세로로 쌓인 아이템들을 수평 중앙에 정렬 */
+    align-items: center; 
+    margin-top: 30px; /* h1과 동일하게 마진을 줄입니다 */
     gap: 20px;
 }
 
 .exam-card {
-    width: 250px;
-    height: 120px;
+    /* 모바일 최적화된 너비와 높이를 기본값으로 사용 */
+    width: 90%; 
+    max-width: 400px; /* 너무 넓은 화면에서도 보기 좋게 최대 너비 제한 */
+    height: 80px; 
     background-color: #4CAF50;
     color: white;
-    font-size: 18px;
+    font-size: 16px; /* 글꼴 크기 조정 */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -31,34 +39,19 @@ h1 {
     transition: 0.3s;
 }
 
+/* PC에서는 hover 효과를 그대로 유지합니다. */
 .exam-card:hover {
     background-color: #45a049;
     transform: scale(1.05);
 }
 
-/* 📱 모바일 최적화 스타일 */
+/* 📱 모바일 최적화 스타일 (추가적인 조정만 남김) */
+/*
+   주요 레이아웃(flex-direction: column)이 이미 기본 스타일에 적용되었기 때문에,
+   이 미디어 쿼리 블록은 모바일에서 필요 없는 효과(hover)를 제거하는 용도로만 사용됩니다.
+*/
 @media (max-width: 600px) {
-    h1 {
-        margin-top: 30px; 
-        font-size: 1.5em;
-    }
-
-    /* 컨테이너의 flex 방향을 세로로 변경 */
-    .exam-container {
-        flex-direction: column; 
-        align-items: center; 
-        margin-top: 30px; 
-    }
-
-    /* 카드를 화면 너비에 맞게 조정 */
-    .exam-card {
-        width: 90%; /* 화면의 대부분을 차지하도록 설정 */
-        max-width: none; /* 최대 너비 제한 해제 */
-        height: 80px; /* 카드 높이 줄이기 */
-        font-size: 16px; /* 글꼴 크기 줄이기 */
-    }
-    
-    /* 모바일에서는 hover 효과를 제거하거나 단순화하여 불필요한 깜빡임을 방지할 수 있습니다. */
+    /* 모바일에서는 불필요한 깜빡임을 막기 위해 hover 효과를 제거/단순화 */
     .exam-card:hover {
         transform: none;
         background-color: #4CAF50; /* 원래 색상 유지 */
