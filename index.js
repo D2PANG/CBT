@@ -1,17 +1,8 @@
-<<<<<<< HEAD
-// import { CORRECT_PASSWORD } from './env.js';
-
-=======
->>>>>>> ea149c6a5b4e491eb50ca80eb4a72a99b2e96d76
 document.addEventListener('DOMContentLoaded', (event) => {
     // 1. 설정
     const CORRECT_PASSWORD = '0936'; 
     const LOGIN_KEY = 'cbt_is_logged_in';
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> ea149c6a5b4e491eb50ca80eb4a72a99b2e96d76
     // 2. HTML 요소 가져오기
     const modal = document.getElementById('passwordModal');
     const passwordInput = document.getElementById('passwordInput');
