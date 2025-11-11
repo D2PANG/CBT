@@ -68,11 +68,11 @@ async function loadQuestions() {
         // 통합 문제 수가 60개 미만일 경우 처리
         questions = allQuestions; 
         console.warn(`총 문제가 60개 미만입니다. 총 ${allQuestions.length}문제를 로드합니다.`);
-        document.getElementById("roundTitle").textContent = `섀시 통합 랜덤 (${questions.length}문제)`;
+        document.getElementById("roundTitle").textContent = `섀시정비 통합 랜덤 (${questions.length}문제)`;
     } else {
         // 3. 전체 문제 중 60문제만 랜덤으로 추출
         questions = shuffleArray(allQuestions).slice(0, 60);
-        document.getElementById("roundTitle").textContent = `섀시 통합 랜덤 60문제`;
+        document.getElementById("roundTitle").textContent = `섀시정비 통합 랜덤 60문제`;
     }
 
     if (questions.length === 0) throw new Error('로드할 문제가 없습니다.');
@@ -160,7 +160,7 @@ function renderQuiz() {
 }
 
 // -----------------------------
-// 제출 및 채점 (섀시 통합용으로 수정)
+// 제출 및 채점
 function submitQuiz() {
     const firstUnansweredIndex = answers.findIndex((a) => a < 0);
     const unansweredCount = answers.filter((a) => a < 0).length;
@@ -176,8 +176,8 @@ function submitQuiz() {
               .scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
         return;
+        }
     }
-  }
 
     clearInterval(timerInterval);
     document.getElementById("timer").textContent = ""; // 타이머 비움
@@ -219,12 +219,12 @@ function submitQuiz() {
 
     const status = document.getElementById("status");
     status.classList.add("center");
-    status.innerHTML = `<span id="scoreDisplay">섀시 통합 랜덤 총점: ${score}/${questions.length}</span>`;
+    status.innerHTML = `<span id="scoreDisplay">섀시정비 통합 랜덤 총점: ${score}/${questions.length}</span>`;
 
     document.getElementById("submitBtn").style.display = "none";
 
     const resultDiv = document.getElementById("result");
-    resultDiv.innerHTML = `<h2>섀시 통합 랜덤 총점: ${score}/${questions.length}</h2>`;
+    resultDiv.innerHTML = `<h2>섀시정비 통합 랜덤 총점: ${score}/${questions.length}</h2>`;
 }
 
 // -----------------------------

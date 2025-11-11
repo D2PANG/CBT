@@ -23,10 +23,10 @@ async function loadQuestions() {
             ...(module.industry010305 || []),
       ];
     selectedSet = shuffleArray(allSets).slice(0, 60);
-    roundTitleText = '냉난방장치 전체 회차 랜덤 60문제';
+    roundTitleText = '냉난방 전체 회차 랜덤 60문제';
     }   else if (!isNaN(round)) {
             selectedSet = module[`industry01030${round}`];
-            roundTitleText = `냉난방장치 ${round}회차`;
+            roundTitleText = `냉난방 ${round}회차`;
     }   else {
             return;
     }
