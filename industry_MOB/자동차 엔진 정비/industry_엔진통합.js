@@ -89,11 +89,11 @@ async function loadQuestions() {
         // 통합 문제 수가 60개 미만일 경우 처리
         questions = allQuestions; 
         console.warn(`총 문제가 60개 미만입니다. 총 ${allQuestions.length}문제를 로드합니다.`);
-        document.getElementById("roundTitle").textContent = `엔진 통합 랜덤 (${questions.length}문제)`;
+        document.getElementById("roundTitle").textContent = `자동차 엔진 정비 전체랜덤 (${questions.length}문제)`;
     } else {
         // 3. 전체 문제 중 60문제만 랜덤으로 추출
         questions = shuffleArray(allQuestions).slice(0, 60);
-        document.getElementById("roundTitle").textContent = `엔진 통합 랜덤 60문제`;
+        document.getElementById("roundTitle").textContent = `자동차 엔진 정비 전체랜덤 60문제`;
     }
 
     if (questions.length === 0) throw new Error('로드할 문제가 없습니다.');
@@ -240,12 +240,12 @@ function submitQuiz() {
 
     const status = document.getElementById("status");
     status.classList.add("center");
-    status.innerHTML = `<span id="scoreDisplay">엔진 통합 랜덤 총점: ${score}/${questions.length}</span>`;
+    status.innerHTML = `<span id="scoreDisplay">자동차 엔진 정비 전체랜덤 총점: ${score}/${questions.length}</span>`;
 
     document.getElementById("submitBtn").style.display = "none";
 
     const resultDiv = document.getElementById("result");
-    resultDiv.innerHTML = `<h2>엔진 통합 랜덤 총점: ${score}/${questions.length}</h2>`;
+    resultDiv.innerHTML = `<h2>자동차 엔진 정비 전체랜덤 총점: ${score}/${questions.length}</h2>`;
 }
 
 // -----------------------------

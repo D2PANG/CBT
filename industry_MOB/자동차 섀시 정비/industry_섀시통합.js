@@ -219,12 +219,12 @@ function submitQuiz() {
 
     const status = document.getElementById("status");
     status.classList.add("center");
-    status.innerHTML = `<span id="scoreDisplay">섀시정비 통합 랜덤 총점: ${score}/${questions.length}</span>`;
+    status.innerHTML = `<span id="scoreDisplay">자동차 섀시 정비 전체랜덤 총점: ${score}/${questions.length}</span>`;
 
     document.getElementById("submitBtn").style.display = "none";
 
     const resultDiv = document.getElementById("result");
-    resultDiv.innerHTML = `<h2>섀시정비 통합 랜덤 총점: ${score}/${questions.length}</h2>`;
+    resultDiv.innerHTML = `<h2>자동차 섀시 정비 전체랜덤 총점: ${score}/${questions.length}</h2>`;
 }
 
 // -----------------------------

@@ -272,10 +272,10 @@ function renderQuiz() {
 
         div.innerHTML = `
             <div class="q-header">
-                <span class="topic-code">${topicName}</span>
                 <span id="q-status-${i}" class="q-status"></span>
             </div>
             <strong class="q-title">${i + 1}. ${q.question}</strong>
+            <div class="q-topic">[${topicName}]</div>
         `;
 
         // imagePath 속성이 있는지 확인
