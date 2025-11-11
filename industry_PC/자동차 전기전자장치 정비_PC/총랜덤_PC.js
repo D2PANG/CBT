@@ -238,8 +238,24 @@ function updateOMRState() {
 function scrollToQuestion(index) {
     const questionDivs = document.getElementsByClassName("question");
     if (questionDivs[index]) {
-        // 문제 DIV의 시작 부분이 뷰포트 상단에 오도록 스크롤
-        questionDivs[index].scrollIntoView({ behavior: 'smooth', block: 'start' }); 
+        // 1. 고정된 헤더의 높이
+        const fixedHeaderHeight = 60; 
+        
+        // 2. 대상 문제 div의 현재 뷰포트 기준 상단 위치를 계산
+        const targetElement = questionDivs[index];
+        const targetRect = targetElement.getBoundingClientRect();
+        
+        // 3. 현재 스크롤 위치에 대상 요소의 뷰포트 상단 위치를 더하여 
+        //    페이지 전체 기준 위치(절대 위치)를 구함
+        const absoluteTop = targetRect.top + window.scrollY;
+        
+        // 4. 고정된 헤더의 높이만큼 빼서 최종 스크롤 위치를 결정
+        const targetScrollPosition = absoluteTop - fixedHeaderHeight - 10; // 10px 여백 추가
+        
+        window.scrollTo({ 
+            top: targetScrollPosition, 
+            behavior: 'smooth' 
+        });
     }
 }
 
@@ -272,7 +288,7 @@ function renderQuiz() {
                 <span id="q-status-${i}" class="q-status"></span>
             </div>
             <strong class="q-title">${i + 1}. ${q.question}</strong>
-            <span class="topic-code">${topicName}</span>
+            <span class="topic-code">[${topicName}]</span>
         `;
 
         // imagePath 속성이 있는지 확인
@@ -429,11 +445,9 @@ function updateTimer() {
     let s = totalSeconds % 60;
     document.getElementById(
       "timer"
-    ).textContent = `남은 시간: ${h.toString().padStart(2, "0")}:${m
-      .toString()
-      .padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    ).textContent = `남은 시간: ${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
     if (totalSeconds <= 0) {
-      submitQuiz();
+      submitQuiz(true);
     } else {
       totalSeconds--;
     }

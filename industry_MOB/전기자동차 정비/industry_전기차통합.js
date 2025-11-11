@@ -256,9 +256,9 @@ function updateTimer() {
     let m = Math.floor((totalSeconds % 3600) / 60);
     let s = totalSeconds % 60;
     document.getElementById("timer").textContent =
-        `남은 시간: ${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+        `남은 시간: ${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 
-    if (totalSeconds <= 0) submitQuiz();
+    if (totalSeconds <= 0) submitQuiz(true);
     else totalSeconds--;
 }
 
