@@ -193,7 +193,7 @@ function scrollToQuestion(index) {
     const questionDivs = document.getElementsByClassName("question");
     if (questionDivs[index]) {
         // 문제 DIV의 시작 부분이 뷰포트 상단에 오도록 스크롤
-        questionDivs[index].scrollIntoView({ behavior: 'smooth', block: 'start' }); 
+        questionDivs[index].scrollIntoView({ behavior: 'smooth', block: 'center' }); 
     }
 }
 
@@ -244,8 +244,6 @@ function renderQuiz() {
             
             // 라디오 버튼 change 이벤트 리스너
             radioInput.addEventListener("change", () => {
-            answers[i] = j;
-            updateRemaining(); // OMR 상태 업데이트 포함
 
             const allLabels = optsDiv.querySelectorAll('label');
             allLabels.forEach(l => l.classList.remove('selected'));
@@ -273,7 +271,7 @@ function renderQuiz() {
 }
 
 // -----------------------------
-// 제출 및 채점 (수정됨: OMR 결과 표시 및 다시 풀기 버튼 렌더링 추가)
+// 제출 및 채점
 function submitQuiz() {
     // 1. 안 푼 문제 인덱스 확인
     const firstUnansweredIndex = answers.findIndex((a) => a < 0);
@@ -394,7 +392,7 @@ function resetQuiz() {
     
     // 3. 타이머 재시작 (1시간 40분 설정 - 초기 스크린샷 시간 참조)
     clearInterval(timerInterval);
-    totalSeconds = (1 * 60 * 60) + (40 * 60); // 1시간 40분
+    totalSeconds = 100 * 60; // 1시간 40분
     timerInterval = setInterval(updateTimer, 1000);
     
     // 4. UI 초기화 및 재렌더링
@@ -435,7 +433,7 @@ function resetQuiz() {
 
 // -----------------------------
 // 타이머
-let totalSeconds = (1 * 60 * 60) + (40 * 60); // 1시간 40분으로 초기화
+let totalSeconds = 100 * 60; // 1시간 40분으로 초기화
 
 function updateTimer() {
     // ✨ 수정: 엔진통합과 동일하게 분:초만 표시
