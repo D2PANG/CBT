@@ -408,9 +408,9 @@ function resetQuiz() {
     const initialSeconds = totalSeconds % 60;
     
     status.innerHTML = `
-        <span id="timer">남은 시간: ${initialMinutes.toString().padStart(2, "0")}:${initialSeconds.toString().padStart(2, "0")}</span>
-        <span id="roundTitle">전기전자+엔진+섀시 전체랜덤</span> 
-        <span id="remaining">남은 문제: ${questions.length}/${questions.length}</span>`;
+    <span id="timer">남은 시간: ${initialMinutes.toString().padStart(2, "0")}:${initialSeconds.toString().padStart(2, "0")}</span>
+    <span id="roundTitle">전기전자+엔진+섀시 전체랜덤</span> 
+    <span id="remaining">남은 문제: ${questions.length}/${questions.length}</span>`;
     
     // 제출 버튼 복원 (두 개 모두)
     document.getElementById("submitBtn").style.display = "block";
