@@ -307,7 +307,11 @@ h1 {
     padding-bottom: 10px;
     position: relative; 
     padding-top: 5px; 
+
+        /* ✨추가: 다음 문제로 스크롤할 때 상단 고정바에 가려지지 않도록 마진을 추가합니다. */
+    scroll-margin-top: 3rem; /* 상태바 높이(5rem)보다 조금 더 여유를 줍니다. */
 }
+
 
 .q-title {
     display: block;
