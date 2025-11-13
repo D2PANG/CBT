@@ -217,7 +217,7 @@ body {
 #floatingSubmitBtn {
     position: fixed;
     top: 4rem;
-    left: 5px;
+    right: 5px;
     z-index: 1010;
     background-color: #28a745;
     color: white;
