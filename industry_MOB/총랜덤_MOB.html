@@ -2,40 +2,26 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>전기전자+엔진+섀시 전체랜덤</title>
-  <link rel="stylesheet" href="../../문제풀이_PC.css">
+  <title id="pageTitle">전기전자+엔진+섀시 전체랜덤</title>
+  <link rel="stylesheet" href="../../문제풀이.css">
 </head>
 <body>
 
   <div id="status">
-    <h1 class="page-title">전기전자+엔진+섀시 전체랜덤</h1> 
-    <div class="status-info">
-        <span id="timer">남은 시간: 01:40:00</span>
-        <span id="remaining">남은 문제: 0/0</span>
-    </div>
+
+    <span id="timer">남은 시간: 01:40:00</span>
+    <span id="roundTitle"></span>
+    <span id="remaining">남은 문제: 0/0</span>
   </div>
 
-  <div id="main-container"> 
-      
-      <div id="quiz-wrapper">
-          <div id="quiz"></div>
-          
-          <button id="submitBtn">제출</button> 
-      </div>
+  <div id="quiz"></div>
 
-      <div id="omr-card">
-          <div class="omr-header">
-              <div class="omr-title">OMR 답안지</div>
-              <button id="omrSubmitBtn" class="submit-btn">제출</button>
-          </div>
-          
-          <div id="omr-list">
-              </div>
-      </div>
-  </div>
+  <button id="submitBtn">제출</button>
 
   <div id="result"></div>
 
-  <script type="module" src="총랜덤_PC.js"></script>
+  <button id="floatingSubmitBtn" title="시험 제출">제출</button> 
+
+  <script type="module" src="총랜덤_MOB.js"></script>
 </body>
 </html>
