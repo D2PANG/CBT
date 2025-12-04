@@ -461,6 +461,7 @@ function submitQuiz() {
           score++;
           labels[q.answer].style.backgroundColor = "#b6fcb6";
           statusSpan.innerHTML = '⭕';
+          statusSpan.style.cssText = 'font-size: 2.0rem; font-weight: 700; position: absolute; left:-14px; top: 72px;';
           if (omrOptions) omrOptions[q.answer].classList.add('correct'); // OMR 정답 표시
       } else if (answers[i] >= 0) {
           // 오답: ❌ 
@@ -468,7 +469,7 @@ function submitQuiz() {
           labels[q.answer].style.backgroundColor = "#b6fcb6"; // 정답은 초록색
           labels[answers[i]].style.backgroundColor = "#fcb6b6"; // 내가 고른 오답은 빨간색
           statusSpan.innerHTML = '❌';
-          statusSpan.style.color = '#dc3545'; 
+          statusSpan.style.cssText = 'font-size: 2.0rem; font-weight: 700; position: absolute; left: -14px; top: 72px;';
           statusSpan.classList.add('status-wrong');
           if (omrOptions) {
              omrOptions[q.answer].classList.add('correct'); // OMR 정답 표시
