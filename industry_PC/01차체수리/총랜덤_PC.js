@@ -8,7 +8,6 @@ import * as Data4 from './4회차/4회차.js';
 import * as Data5 from './5회차/5회차.js';
 import * as Data6 from './6회차/6회차.js';
 
-// 각 회차 모듈을 배열로 관리
 const allSets = [Data1, Data2, Data3, Data4, Data5, Data6];
 
 let questions = [];
@@ -47,7 +46,10 @@ function renderQuiz() {
         const div = document.createElement("div");
         div.className = "question";
         div.innerHTML = `
-            <div class="q-header"><span id="q-status-${i}" class="q-status"></span></div>
+            <div class="q-header">
+                <span id="q-status-${i}" class="q-status"></span>
+                <span class="round-tag" style="font-size: 0.85rem; color: #777; background: #eee; padding: 2px 8px; border-radius: 4px; margin-bottom: 5px; display: inline-block;">${q.roundInfo}</span>
+            </div>
             <strong class="q-title">${i + 1}. ${q.question}</strong>
             ${q.imagePath ? `<img src="${q.imagePath}" alt="문제" style="width: 100%; max-width: 500px; height: auto; margin: 15px 0;">` : ''}
             <div class="options"></div>
@@ -169,7 +171,7 @@ function submitQuiz(isQuick = false) {
             status.innerHTML = '❌';
             omrOpts[q.answer].classList.add('correct');
         }
-        status.style.cssText = 'font-size: 2rem; font-weight: 700; position: absolute; left:-14px; top: -35px;';
+        status.style.cssText = 'font-size: 2rem; font-weight: 700; position: absolute; left:-14px; top: 10px;';
         qDiv.querySelector(".explain").innerHTML = `<strong>정답: ${q.originalCorrectOptionText}</strong><br>${q.explain || '해설이 없습니다.'}`;
         qDiv.querySelectorAll('input').forEach(r => r.disabled = true);
     });
@@ -197,32 +199,38 @@ function updateTimer() {
 }
 
 /* ===========================
-    6. 초기화 실행 (가장 중요한 부분)
+    6. 초기화 실행 (회차 정보 추출 로직 포함)
 =========================== */
 function initApp() {
     if (timerInterval) clearInterval(timerInterval);
 
     let rawPool = [];
 
-    // 1~6회차 파일에서 10문제씩 추출
     allSets.forEach((dataModule, index) => {
-        // export const repairData 로 되어 있으므로 dataModule.repairData를 직접 참조
         const setQuestions = dataModule.repairData; 
         
         if (setQuestions && Array.isArray(setQuestions)) {
+            // 각 회차에서 랜덤하게 10개 추출
             const picked = shuffleArray(setQuestions).slice(0, 10);
-            rawPool = rawPool.concat(picked);
+            
+            // 추출된 데이터에 출처(회차) 정보 주입
+            const pickedWithInfo = picked.map(q => ({
+                ...q,
+                roundInfo: `${index + 1}회차`
+            }));
+            
+            rawPool = rawPool.concat(pickedWithInfo);
         } else {
-            console.error(`${index + 1}회차 데이터를 찾지 못했습니다. 변수명 'repairData'를 확인하세요.`);
+            console.error(`${index + 1}회차 데이터를 찾지 못했습니다.`);
         }
     });
 
     if (rawPool.length === 0) {
-        alert("문제가 로드되지 않았습니다. 파일 경로와 export 변수명을 확인해주세요.");
+        alert("문제가 로드되지 않았습니다.");
         return;
     }
 
-    // 최종 60문제를 다시 섞고 준비
+    // 전체 60문제를 다시 랜덤하게 섞고 보기 셔플
     questions = prepareQuestions(shuffleArray(rawPool)); 
     answers = Array(questions.length).fill(-1);
     totalSeconds = 100 * 60;
@@ -247,7 +255,7 @@ function initApp() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// 이벤트 바인딩
+// 초기 실행
 const sBtn = document.getElementById("submitBtn");
 const oBtn = document.getElementById("omrSubmitBtn");
 const qBtn = document.getElementById("quickSubmitBtn");

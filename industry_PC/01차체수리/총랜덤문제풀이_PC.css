@@ -493,3 +493,23 @@ h1 {
     line-height: 1.2; 
     display: block; 
 }
+
+/* 회차 태그 단독 스타일 */
+.round-tag {
+    position: absolute;
+    top: -5px; /* 문제 번호보다 약간 위에 배치 */
+    left: 0;
+    background-color: #1f3b73; /* 상태바와 통일감 있는 색상 */
+    color: #c81515 !important;
+    font-size: 0.75rem !important; /* 작고 깔끔하게 */
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 3px;
+    line-height: 1.2;
+    z-index: 10;
+}
+
+/* 겹침 방지를 위한 최소한의 보정 */
+.q-header {
+    margin-bottom: 45px !important; /* 태그가 들어갈 공간 확보 (겹침 해결 핵심) */
+}
