@@ -43,7 +43,7 @@ body { font-family: 'Noto Sans KR', sans-serif; line-height: 1.6; padding-top: 6
 #quiz-wrapper { padding: 20px 15px; }
 .question { 
     margin-bottom: 50px; padding-bottom: 20px; border-bottom: 1px dashed #eee;
-    scroll-margin-top: 220px; /* OMR에 가려지지 않게 높이 조절 */
+    scroll-margin-top: 500px; /* OMR에 가려지지 않게 높이 조절 */
     position: relative;
 }
 .q-title { display: block; font-size: 1.2rem; font-weight: 600; margin-bottom: 15px; }
