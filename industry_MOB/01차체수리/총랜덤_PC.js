@@ -125,6 +125,16 @@ function submitQuiz(isQuick = false) {
         qDiv.querySelectorAll('label')[q.answer].style.background = "#d4edda";
         if (answers[i] === q.answer) {
             score++; status.innerText = '⭕';
+            // ⭕ 기호 위치 설정 추가
+         status.style.cssText = `
+         position: absolute; 
+         left: -13px; 
+         top: 13px; 
+         font-size: 1rem; 
+         font-weight: 700;
+         z-index: 10;
+    `;
+            
             omrOpts[q.answer].classList.add('correct');
         } else {
             if (answers[i] >= 0) {
@@ -134,10 +144,10 @@ function submitQuiz(isQuick = false) {
             status.innerText = '❌';
             // ❌ 기호 위치 설정 (⭕와 가급적 동일하게 설정)
              status.style.cssText = `
-              position: absolute; 
+             position: absolute; 
              left: -13px; 
              top: 13px; 
-             font-size: 2rem; 
+             font-size: 1rem; 
              font-weight: 700;
              z-index: 10;
     `;
