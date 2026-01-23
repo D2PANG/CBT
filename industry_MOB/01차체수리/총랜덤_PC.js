@@ -135,8 +135,8 @@ function submitQuiz(isQuick = false) {
             // ❌ 기호 위치 설정 (⭕와 가급적 동일하게 설정)
              status.style.cssText = `
               position: absolute; 
-             left: -15px; 
-             top: 12px; 
+             left: -13px; 
+             top: 13px; 
              font-size: 2rem; 
              font-weight: 700;
              z-index: 10;
