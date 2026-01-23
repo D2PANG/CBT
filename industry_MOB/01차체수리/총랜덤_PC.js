@@ -132,6 +132,15 @@ function submitQuiz(isQuick = false) {
                 omrOpts[answers[i]].classList.add('wrong');
             }
             status.innerText = '❌';
+            // ❌ 기호 위치 설정 (⭕와 가급적 동일하게 설정)
+             status.style.cssText = `
+              position: absolute; 
+             left: -15px; 
+             top: 12px; 
+             font-size: 2rem; 
+             font-weight: 700;
+             z-index: 10;
+    `;
             omrOpts[q.answer].classList.add('correct');
         }
         qDiv.querySelector(".explain").innerHTML = ` 정답: ${q.originalCorrectOptionText}<br>${q.explain || ''}`;
