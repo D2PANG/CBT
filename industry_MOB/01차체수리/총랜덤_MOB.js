@@ -104,7 +104,15 @@ window.globalSelect = (vIdx) => {
 function updateRemaining() {
     const count = answers.filter(a => a >= 0).length;
     document.getElementById("remaining").textContent = `남은 문제: ${questions.length - count}/${questions.length}`;
+    
     document.querySelectorAll('.omr-item').forEach((item, i) => {
+        // 1. 해당 문제의 답이 선택되었는지 확인 (answers[i]가 -1이 아니면 푼 것)
+        const isAnswered = answers[i] >= 0;
+        
+        // 2. 푼 문제라면 'answered' 클래스를 추가, 아니면 제거
+        item.classList.toggle('answered', isAnswered);
+
+        // 기존 코드: 각 옵션 동그라미 색칠 로직
         item.querySelectorAll('.omr-option').forEach((opt, j) => {
             opt.classList.toggle('selected', answers[i] === j);
         });
@@ -122,43 +130,53 @@ function submitQuiz(isQuick = false) {
 
     let score = 0;
     questions.forEach((q, i) => {
-        const qDiv = document.getElementsByClassName("question")[i];
-        const status = document.getElementById(`q-status-${i}`);
-        const omrOpts = document.querySelectorAll('.omr-item')[i].querySelectorAll('.omr-option');
+    const qDiv = document.getElementsByClassName("question")[i];
+    const status = document.getElementById(`q-status-${i}`);
+    
+    // OMR 아이템 한 줄(부모)을 가져옵니다.
+    const omrItem = document.querySelectorAll('.omr-item')[i];
+    const omrOpts = omrItem.querySelectorAll('.omr-option');
+    
+    qDiv.querySelectorAll('label')[q.answer].style.background = "#d4edda";
+    
+    if (answers[i] === q.answer) {
+        score++; 
+        status.innerText = '⭕';
         
-        qDiv.querySelectorAll('label')[q.answer].style.background = "#d4edda";
-        if (answers[i] === q.answer) {
-            score++; status.innerText = '⭕';
-            // ⭕ 기호 위치 설정 추가
-         status.style.cssText = `
-         position: absolute; 
-         left: -6px; 
-         top: 28px; 
-         font-size: 1rem; 
-         font-weight: 700;
-         z-index: 10;
-    `;
-            
-            omrOpts[q.answer].classList.add('correct');
-        } else {
-            if (answers[i] >= 0) {
-                qDiv.querySelectorAll('label')[answers[i]].style.background = "#f8d7da";
-                omrOpts[answers[i]].classList.add('wrong');
-            }
-            status.innerText = '❌';
-            // ❌ 기호 위치 설정 (⭕와 가급적 동일하게 설정)
-             status.style.cssText = `
-             position: absolute; 
-             left: -6px; 
-             top: 28px; 
-             font-size: 1rem; 
-             font-weight: 700;
-             z-index: 10;
-    `;
-            omrOpts[q.answer].classList.add('correct');
+        // [추가] 정답일 때 OMR 번호가 포함된 부모에 correct 클래스 추가
+        omrItem.classList.add('correct');
+        
+        status.style.cssText = `
+            position: absolute; 
+            left: -6px; 
+            top: 28px; 
+            font-size: 1rem; 
+            font-weight: 700;
+            z-index: 10;
+        `;
+        omrOpts[q.answer].classList.add('correct');
+    } else {
+        if (answers[i] >= 0) {
+            qDiv.querySelectorAll('label')[answers[i]].style.background = "#f8d7da";
+            omrOpts[answers[i]].classList.add('wrong');
         }
-        qDiv.querySelector(".explain").innerHTML = ` 정답: ${q.originalCorrectOptionText}<br>${q.explain || ''}`;
-    });
+        status.innerText = '❌';
+
+        // [추가] 오답일 때 OMR 번호가 포함된 부모에 wrong 클래스 추가
+        omrItem.classList.add('wrong');
+
+        status.style.cssText = `
+            position: absolute; 
+            left: -6px; 
+            top: 28px; 
+            font-size: 1rem; 
+            font-weight: 700;
+            z-index: 10;
+        `;
+        omrOpts[q.answer].classList.add('correct');
+    }
+    qDiv.querySelector(".explain").innerHTML = ` 정답: ${q.originalCorrectOptionText}<br>${q.explain || ''}`;
+});
 
     const statusHeader = document.getElementById("status");
     statusHeader.classList.add("center");

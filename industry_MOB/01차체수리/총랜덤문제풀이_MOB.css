@@ -29,7 +29,47 @@ body { font-family: 'Noto Sans KR', sans-serif; line-height: 1.6; padding-top: 6
     display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px;
 }
 .omr-item { display: flex; flex-direction: column; align-items: center; }
-.omr-q-num { font-size: 0.6rem; color: #666; cursor: pointer; }
+
+/* 채점 완료 후 정답 상태 */
+.omr-item.correct .omr-q-num {
+    background-color: #28a745 !important; /* 초록색 */
+    color: white !important;
+    border-color: #1e7e34 !important;
+}
+
+/* 채점 완료 후 오답 상태 */
+.omr-item.wrong .omr-q-num {
+    background-color: #dc3545 !important; /* 빨간색 */
+    color: white !important;
+    border-color: #bd2130 !important;
+}
+
+.omr-q-num {
+    font-size: 0.4rem;
+    cursor: pointer;
+    background-color: #f8f9fa; /* 안 풀었을 때 배경색 (연회색) */
+    color: #333;               /* 글자색 */
+    border: 0px solid #dee2e6;
+    border-radius: 4px;        /* 약간의 곡률을 주면 더 깔끔합니다 */
+    display: inline-block;     /* 크기 적용을 위해 추가 */
+    width: 10px;               /* 번호 영역 너비 고정 */
+    text-align: center;        /* 번호 가운데 정렬 */
+    transition: all 0.3s;
+}
+
+/* 문제를 풀었을 때 부모(omr-item)에 answered 클래스가 붙으면 색상 변경 */
+.omr-item.answered .omr-q-num {
+    background-color: #007bff; /* 풀었을 때 배경색 (파란색) */
+    color: white;              /* 글자색 (흰색) */
+    border-color: #0056b3;
+}
+
+/* 문제를 풀었을 때 (답이 선택되었을 때) 변할 스타일 */
+.omr-item.answered .omr-q-num {
+    background-color: #007bff; /* 풀었을 때 배경색 (파란색) */
+    color: white;              /* 글자색 흰색으로 */
+    border-color: #0056b3;
+}
 .omr-options-wrapper { display: flex; gap: 1px; }
 .omr-option {
     width: 6px; height: 6px; font-size: 0.3rem; border: 1px solid #ccc;
