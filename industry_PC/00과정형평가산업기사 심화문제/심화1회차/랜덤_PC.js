@@ -1,28 +1,113 @@
+/* ===========================
+    1. 데이터 로드 및 초기 설정
+=========================== */
+// 2번 코드의 다중 로드 대신 1번처럼 단일 파일 로드 방식으로 수정
 import * as Data from './심화1회차.js';
 
-// 데이터 로드 방식 수정: 데이터를 가져오면서 roundInfo를 주입합니다.
+// 데이터 내에서 배열을 찾아 로드
 const allQuestions = Object.values(Data).find(val => Array.isArray(val)) || [];
-// [수정] 모든 문제 객체에 roundInfo: "심화1회차"를 추가함
-let rawQuestions = allQuestions.slice(0, 80).map(q => ({
-    ...q,
-    roundInfo: "심화1회차"
-}));
 
 let questions = [];
 let answers = [];
 let totalSeconds = 60 * 60;
 let timerInterval = null;
+let isWrongMode = false;
 
-function shuffleArray(array) {
-    return [...array].sort(() => Math.random() - 0.5);
+/* ===========================
+    2. 오답 세트 관리 및 삭제 (기존 2번 코드 기능)
+=========================== */
+function saveToWrongNote() {
+    let wrongPool = JSON.parse(localStorage.getItem('wrong_pool') || "{}");
+    let wrongSets = JSON.parse(localStorage.getItem('wrong_sets') || "[]");
+    const currentWrongQs = questions.filter((q, i) => answers[i] !== q.answer);
+
+    currentWrongQs.forEach(q => {
+        const qKey = q.question;
+        if (wrongPool[qKey]) {
+            wrongPool[qKey].wrongCount++;
+        } else {
+            wrongPool[qKey] = { ...q, wrongCount: 1 };
+            let placed = false;
+            for (let set of wrongSets) {
+                if (set.questions.length < 60) {
+                    set.questions.push(qKey);
+                    placed = true; break;
+                }
+            }
+            if (!placed) {
+                wrongSets.push({
+                    id: Date.now(),
+                    date: new Date().toLocaleDateString(),
+                    questions: [qKey]
+                });
+            }
+        }
+    });
+    localStorage.setItem('wrong_pool', JSON.stringify(wrongPool));
+    localStorage.setItem('wrong_sets', JSON.stringify(wrongSets));
 }
+
+window.deleteWrongSet = (setId, event) => {
+    event.stopPropagation();
+    if (confirm("이 오답 세트를 삭제하시겠습니까?")) {
+        let sets = JSON.parse(localStorage.getItem('wrong_sets') || "[]");
+        sets = sets.filter(s => s.id !== setId);
+        localStorage.setItem('wrong_sets', JSON.stringify(sets));
+        startWrongNote();
+    }
+};
+
+window.resetWrongData = () => {
+    if (confirm("모든 오답 세트와 누적 기록이 영구적으로 삭제됩니다. 계속하시겠습니까?")) {
+        localStorage.removeItem('wrong_pool');
+        localStorage.removeItem('wrong_sets');
+        alert("초기화되었습니다.");
+        closeModal();
+    }
+};
+
+window.startWrongNote = () => {
+    const sets = JSON.parse(localStorage.getItem('wrong_sets') || "[]");
+    if (sets.length === 0) return alert("저장된 오답이 없습니다.");
+
+    let html = `<h2 class="modal-title">📝 오답 세트 선택</h2>`;
+    sets.forEach((set, i) => {
+        html += `
+            <div class="set-row">
+                <button class="set-select-btn" onclick="loadWrongSet(${i})">
+                    <div class="set-info">
+                        <span class="set-name">세트 ${i + 1}</span>
+                        <span class="set-date">${set.date}</span>
+                    </div>
+                    <span class="set-count">${set.questions.length}문항</span>
+                </button>
+                <button class="set-delete-btn" onclick="deleteWrongSet(${set.id}, event)">삭제</button>
+            </div>`;
+    });
+    html += `<div style="margin-top:25px;"><button onclick="resetWrongData()" class="reset-data-btn">🔥 전체 기록 초기화</button></div>`;
+    openModal(html);
+};
+
+window.loadWrongSet = (index) => {
+    const sets = JSON.parse(localStorage.getItem('wrong_sets') || "[]");
+    const pool = JSON.parse(localStorage.getItem('wrong_pool') || "{}");
+    if (confirm(`해당 세트를 푸시겠습니까?`)) {
+        isWrongMode = true;
+        closeModal();
+        questions = prepareQuestions(sets[index].questions.map(key => pool[key]));
+        startNewQuiz();
+    }
+};
+
+/* ===========================
+    3. 핵심 로직 (퀴즈/OMR/타이머)
+=========================== */
+function shuffleArray(array) { return [...array].sort(() => Math.random() - 0.5); }
 
 function prepareQuestions(sourceArray) {
     const shuffled = shuffleArray(JSON.parse(JSON.stringify(sourceArray)));
     shuffled.forEach(q => {
-        if (!q.originalCorrectOptionText) {
-            q.originalCorrectOptionText = q.options[q.answer];
-        }
+        if (!q.originalCorrectOptionText) q.originalCorrectOptionText = q.options[q.answer];
         q.options = shuffleArray(q.options);
         q.answer = q.options.indexOf(q.originalCorrectOptionText);
     });
@@ -32,18 +117,23 @@ function prepareQuestions(sourceArray) {
 function renderQuiz() {
     const quizDiv = document.getElementById("quiz");
     quizDiv.innerHTML = "";
+    const pool = JSON.parse(localStorage.getItem('wrong_pool') || "{}");
+
     questions.forEach((q, i) => {
+        const wrongData = pool[q.question];
+        const countBadge = (wrongData && wrongData.wrongCount > 1) 
+            ? `<span class="wrong-badge">누적 오답 ${wrongData.wrongCount}회</span>` : '';
+
         const div = document.createElement("div");
         div.className = "question";
         div.innerHTML = `
             <div class="q-header">
-                <span class="round-tag">${q.roundInfo}</span>
-                <span id="q-status-${i}" class="q-status"></span>
+                <span class="round-tag">${q.roundInfo || '심화1회차'}</span>
+                ${countBadge} <span id="q-status-${i}" class="q-status"></span>
             </div>
             <strong class="q-title">${i + 1}. ${q.question}</strong>
-            ${q.imagePath ? `<img src="${q.imagePath}" alt="문제" style="width: 100%; max-width: 500px; height: auto; margin: 15px 0;">` : ''}
-            <div class="options"></div>
-            <div class="explain"></div>
+            ${q.imagePath ? `<img src="${q.imagePath}" class="q-image">` : ''}
+            <div class="options"></div><div class="explain"></div>
         `;
         const optsDiv = div.querySelector(".options");
         q.options.forEach((opt, j) => {
@@ -62,8 +152,6 @@ function renderQuiz() {
     });
 }
 
-// --- 이 하 렌더링 및 로직 코드는 동일합니다 (생략 가능하지만 완성도를 위해 포함) ---
-
 function renderOMR() {
     const omrListDiv = document.getElementById("omr-list");
     omrListDiv.innerHTML = "";
@@ -78,7 +166,6 @@ function renderOMR() {
         `;
         omrListDiv.appendChild(itemDiv);
     });
-    updateRemaining();
     renderGlobalBtns();
 }
 
@@ -87,13 +174,12 @@ function renderGlobalBtns() {
     let wrap = header.querySelector(".global-select-wrapper") || document.createElement("div");
     wrap.className = "global-select-wrapper";
     wrap.innerHTML = [0,1,2,3].map(i => `<button class="omr-global-select-btn" onclick="globalSelect(${i})">${i+1}</button>`).join('');
-    const quickBtn = document.getElementById("quickSubmitBtn");
-    header.insertBefore(wrap, quickBtn);
+    header.insertBefore(wrap, document.getElementById("quickSubmitBtn"));
 }
 
 window.scrollToQuestion = (i) => {
     const q = document.getElementsByClassName("question")[i];
-    if (q) q.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (q) window.scrollTo({ top: q.getBoundingClientRect().top + window.pageYOffset - 110, behavior: 'smooth' });
 };
 
 window.selectFromOMR = (qIdx, vIdx) => {
@@ -101,51 +187,38 @@ window.selectFromOMR = (qIdx, vIdx) => {
     if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change')); }
 };
 
-window.globalSelect = (vIdx) => {
-    questions.forEach((_, i) => {
-        answers[i] = vIdx;
-        const radio = document.querySelector(`input[name="q${i}"][value="${vIdx}"]`);
-        if (radio) radio.checked = true;
-    });
-    updateRemaining();
-};
+window.globalSelect = (vIdx) => { questions.forEach((_, i) => selectFromOMR(i, vIdx)); };
 
 function updateRemaining() {
     const count = answers.filter(a => a >= 0).length;
-    const rem = document.getElementById("remaining");
-    if (rem) rem.textContent = `남은 문제: ${questions.length - count}/${questions.length}`;
+    document.getElementById("remaining").textContent = `남은 문제: ${questions.length - count}/${questions.length}`;
     document.querySelectorAll('.omr-item').forEach((item, i) => {
-        const isAnswered = answers[i] >= 0;
-        item.classList.toggle('answered', isAnswered);
-        item.querySelectorAll('.omr-option').forEach((opt, j) => {
-            opt.classList.toggle('selected', answers[i] === j);
-        });
+        item.classList.toggle('answered', answers[i] >= 0);
+        item.querySelectorAll('.omr-option').forEach((opt, j) => opt.classList.toggle('selected', answers[i] === j));
     });
 }
 
 function submitQuiz(isQuick = false) {
-    if (!isQuick) {
-        const unansweredIdx = answers.findIndex(a => a < 0);
-        if (unansweredIdx !== -1) {
-            alert("미풀이 문제가 있습니다. 해당 문제로 이동합니다.");
-            scrollToQuestion(unansweredIdx);
-            return; 
-        }
+    if (!isQuick && answers.includes(-1)) {
+        alert("미풀이 문제가 있습니다.");
+        scrollToQuestion(answers.indexOf(-1));
+        return;
     }
+    disableExitPrevention();
     clearInterval(timerInterval);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
     let score = 0;
     questions.forEach((q, i) => {
         const qDiv = document.getElementsByClassName("question")[i];
         const status = document.getElementById(`q-status-${i}`);
         const omrItem = document.querySelectorAll('.omr-item')[i];
         const omrOpts = omrItem.querySelectorAll('.omr-option');
+        
         qDiv.querySelectorAll('label')[q.answer].style.backgroundColor = "#b6fcb6";
         if (answers[i] === q.answer) {
-            score++; 
-            status.innerHTML = '⭕';
+            score++; status.innerHTML = '⭕';
             omrItem.classList.add('correct');
-            omrOpts[q.answer].classList.add('correct');
         } else {
             if (answers[i] >= 0) {
                 qDiv.querySelectorAll('label')[answers[i]].style.backgroundColor = "#fcb6b6";
@@ -153,117 +226,74 @@ function submitQuiz(isQuick = false) {
             }
             status.innerHTML = '❌';
             omrItem.classList.add('wrong');
-            omrOpts[q.answer].classList.add('correct');
         }
-        status.style.cssText = 'font-size: 2rem; font-weight: 700; position: absolute; left:-14px; top: 40px;';
+        omrOpts[q.answer].classList.add('correct');
+        qDiv.querySelector(".explain").style.display = "block";
         qDiv.querySelector(".explain").innerHTML = `<strong>정답: ${q.originalCorrectOptionText}</strong><br>${q.explain || '해설이 없습니다.'}`;
         qDiv.querySelectorAll('input').forEach(r => r.disabled = true);
     });
-    const statusHeader = document.getElementById("status");
-    statusHeader.classList.add("center");
-    statusHeader.innerHTML = `<span id="scoreDisplay">결과: ${score}/${questions.length}</span><button id="retryBtn" onclick="location.reload()">다시 풀기</button>`;
+
+    saveQuizResult(score, questions.length);
+    saveToWrongNote();
+    
+    document.getElementById("status").innerHTML = `<span id="scoreDisplay">결과: ${score}/${questions.length}</span><button id="retryBtn" onclick="location.reload()">다시 풀기</button>`;
     document.getElementById("submitBtn").style.display = "none";
-    document.getElementById("omrSubmitBtn").style.display = "none";
-    document.getElementById("quickSubmitBtn").style.display = "none";
 }
 
+/* ===========================
+    4. 초기화 및 유틸리티
+=========================== */
 function updateTimer() {
     let m = Math.floor(totalSeconds / 60), s = totalSeconds % 60;
-    const timerElem = document.getElementById("timer");
-    if (timerElem) timerElem.textContent = `남은 시간: ${m}:${s < 10 ? '0'+s : s}`;
+    document.getElementById("timer").textContent = `남은 시간: ${m}:${s < 10 ? '0'+s : s}`;
     if (totalSeconds-- <= 0) submitQuiz(true);
 }
 
-function initApp() {
-    if (timerInterval) clearInterval(timerInterval);
-    questions = prepareQuestions(rawQuestions); 
+function startNewQuiz() {
     answers = Array(questions.length).fill(-1);
-    totalSeconds = 60 * 60;
-    const status = document.getElementById("status");
-    status.classList.remove("center");
-    status.innerHTML = `
-        <h1 class="page-title">산업기사 심화1회차 전체랜덤</h1>
-        <div class="status-info"><span id="timer"></span> <span id="remaining"></span></div>
-    `;
-    document.getElementById("submitBtn").style.display = "block";
-    document.getElementById("omrSubmitBtn").style.display = "block";
-    document.getElementById("quickSubmitBtn").style.display = "block";
     renderQuiz();
     renderOMR();
+    updateRemaining();
+    if(timerInterval) clearInterval(timerInterval);
+    totalSeconds = 60 * 60;
     timerInterval = setInterval(updateTimer, 1000);
 }
 
+function initApp() {
+    if (localStorage.getItem('dark-mode') === 'true') document.body.classList.add('dark-mode');
+    
+    // [수정 포인트] 2번의 다중 로드 대신 단일 파일에서 80개 추출
+    const rawPool = allQuestions.slice(0, 80).map(q => ({ ...q, roundInfo: "심화1회차" }));
+    
+    questions = prepareQuestions(rawPool);
+    startNewQuiz();
+}
+
+function saveQuizResult(score, total) {
+    const history = JSON.parse(localStorage.getItem('quiz_history') || "[]");
+    history.push({ date: new Date().toLocaleDateString(), score, total });
+    localStorage.setItem('quiz_history', JSON.stringify(history.slice(-10)));
+}
+
+window.toggleDarkMode = () => {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('dark-mode', isDark);
+};
+
+function handleBeforeUnload(e) { e.preventDefault(); e.returnValue = ''; return ''; }
+function handlePageHide() { localStorage.setItem('temp_answers', JSON.stringify(answers)); }
+function enableExitPrevention() { window.addEventListener('beforeunload', handleBeforeUnload); window.addEventListener('pagehide', handlePageHide); }
+function disableExitPrevention() { window.removeEventListener('beforeunload', handleBeforeUnload); window.removeEventListener('pagehide', handlePageHide); }
+
+function openModal(content) {
+    document.getElementById('modal-body').innerHTML = content;
+    document.getElementById('modal-overlay').classList.remove('hidden');
+}
+window.closeModal = () => document.getElementById('modal-overlay').classList.add('hidden');
+
+// 실행
 document.getElementById("submitBtn").onclick = () => submitQuiz(false);
 document.getElementById("omrSubmitBtn").onclick = () => submitQuiz(false);
 document.getElementById("quickSubmitBtn").onclick = () => submitQuiz(true);
-
-initApp();
-
-// 1. 이탈 방지 핸들러
-function handleBeforeUnload(e) {
-    e.preventDefault();
-    e.returnValue = ''; 
-    return '';
-}
-
-// 2. [추가] 아이폰 Safari 전용 대응 (pagehide)
-// Safari는 새로고침 시 beforeunload보다 pagehide가 더 안정적으로 호출됩니다.
-function handlePageHide(e) {
-    // 사용자가 답을 작성 중이었다면 로컬 스토리지에 임시 저장 (보험)
-    localStorage.setItem('temp_answers', JSON.stringify(answers));
-}
-
-function enableExitPrevention() {
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    window.addEventListener('pagehide', handlePageHide); // iOS 대응 추가
-    
-    // 뒤로가기 방지
-    window.history.pushState(null, null, window.location.href);
-    window.onpopstate = function() {
-        if (confirm("시험을 종료하시겠습니까? 작성 중인 답안이 저장되지 않습니다.")) {
-            disableExitPrevention();
-            window.history.back();
-        } else {
-            window.history.pushState(null, null, window.location.href);
-        }
-    };
-}
-
-function disableExitPrevention() {
-    window.removeEventListener('beforeunload', handleBeforeUnload);
-    window.removeEventListener('pagehide', handlePageHide);
-    window.onpopstate = null;
-    localStorage.removeItem('temp_answers'); // 정상 제출 시 임시 데이터 삭제
-}
-
-// 3. 앱 초기화 및 터치 권한
 enableExitPrevention();
-window.addEventListener('touchstart', () => {}, { once: true });
-
-// 4. [보너스] 만약 새로고침 되어버렸을 때, 기존 답안 불러오기 (initApp 마지막에 추가 권장)
-function restoreAnswers() {
-    const saved = localStorage.getItem('temp_answers');
-    if (saved) {
-        const savedAnswers = JSON.parse(saved);
-        savedAnswers.forEach((val, idx) => {
-            if (val !== -1) {
-                // 저장된 답이 있다면 OMR과 라디오 버튼에 적용
-                selectFromOMR(idx, val);
-            }
-        });
-    }
-}
-
-// 제출 로직 래핑
-const originalSubmitQuiz = submitQuiz;
-window.submitQuiz = function(isQuick) {
-    if (isQuick || !answers.includes(-1)) {
-        disableExitPrevention();
-    }
-    originalSubmitQuiz(isQuick);
-};
-
-// 페이지 로드 시 복구 실행 (코드 맨 끝에 추가)
-window.onload = () => {
-    restoreAnswers();
-};
+initApp();
