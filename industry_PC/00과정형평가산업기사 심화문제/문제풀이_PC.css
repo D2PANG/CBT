@@ -369,87 +369,112 @@ body.dark-mode #retryBtn {
 }
 
 /* ============================================================
-    모바일 환경 최적화 (768px 이하)
-    - 80문항 무스크롤 상단 고정 OMR (4행 20열)
-    - 상단바(Status) 요소 간 간격 및 크기 최적화
+    모바일 환경 최종 최적화 (768px 이하)
+    - 80문항 번호판 + 조작 버튼 통합 상단 고정
+    - 요소 간 겹침 방지 및 터치 영역 최적화
 ============================================================ */
 @media (max-width: 768px) {
     body {
-        /* 상단바 + 상태바 + 확장된 OMR 높이에 맞춰 본문 여백 확보 */
-        padding-top: 175px !important; 
+        /* 상단바(30)+상태바(45)+OMR카드(약 130) 높이에 맞춘 여백 */
+        padding-top: 215px !important; 
     }
 
-    /* 1. 상단 상태바(Status) 및 내부 버튼 최적화 */
+    /* 1. 상단 상태바(Status) 슬림화 및 버튼 공간 확보 */
     #status {
         height: 45px !important;
         padding: 0 10px !important;
+        top: 30px !important;
     }
 
-    /* 제목 크기를 줄이고 버튼 공간 확보 */
     #status .page-title {
-        font-size: 0.9rem !important;
-        max-width: 35% !important;
+        font-size: 0.85rem !important; /* 제목 크기 축소 */
+        max-width: 30% !important;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
-    /* 버튼 그룹 컨테이너 최적화 */
-    #top-nav {
-        height: 35px !important;
-        gap: 8px !important;
-    }
+    /* 상단 네비게이션 버튼(테마 등) 최적화 */
+    #top-nav { height: 30px !important; gap: 5px !important; }
+    #top-nav button { padding: 2px 15px !important; font-size: 0.75rem !important; }
 
-    /* 상단 버튼들 크기 축소 */
-    #top-nav button, 
-    #retryBtn, 
-    .omr-global-select-btn {
-        padding: 4px 10px !important;
-        font-size: 0.75rem !important;
-        min-width: auto !important;
-    }
-
-    /* 점수 표시판 슬림화 */
+    /* 점수 표시판 및 다시풀기 버튼 */
     #status #scoreDisplay {
-        font-size: 0.8rem !important;
-        padding: 4px 8px !important;
+        font-size: 0.75rem !important;
+        padding: 3px 8px !important;
         margin-right: 5px !important;
     }
+    #retryBtn { padding: 4px 8px !important; font-size: 0.7rem !important; }
 
-    /* 2. OMR 카드: 80문제가 다 보이도록 높이 확장 및 고정 */
+    /* 2. OMR 카드: 80문항 + 조작 버튼 통합 배치 */
     #omr-card {
         position: fixed !important;
-        top: 80px !important; /* 상단바(35)+상태바(45) 바로 아래 */
+        top: 75px !important; /* 상태바 바로 아래 */
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
-        height: 90px !important; /* 4행이 넉넉히 들어가는 높이 */
+        height: 135px !important; /* 번호판(90) + 버튼(45) */
         z-index: 1200;
         background: var(--card-bg);
         border-radius: 0;
         border-bottom: 2px solid var(--status-border);
-        padding: 5px 4px !important;
-        overflow: hidden !important; /* 스크롤 방지 */
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 5px !important;
+        overflow: hidden !important;
+        display: flex;
+        flex-direction: column;
+        gap: 8px; /* 번호판과 버튼 사이 간격 */
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
     }
 
-    /* OMR 헤더 숨김 (공간 확보) */
+    /* 3. OMR 버튼부 (밀기, 제출 버튼들) 복구 및 정렬 */
     #omr-card .omr-header {
-        display: none !important;
+        display: flex !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        order: 2; /* 번호판 아래로 배치 */
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
     }
 
-    /* 3. 4행 20열 그리드 (80문제 완전 출력) */
+    #omr-card .omr-title { display: none !important; } /* OMR 글자 숨김 */
+
+    .global-select-wrapper {
+        display: flex !important;
+        gap: 2px !important;
+        flex: 1;
+    }
+
+    .omr-global-select-btn {
+        flex: 1;
+        padding: 8px 0 !important;
+        font-size: 0.7rem !important;
+        font-weight: bold;
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+    }
+
+    #omrSubmitBtn, #quickSubmitBtn {
+        height: 32px;
+        padding: 0 8px !important;
+        font-size: 0.75rem !important;
+        margin-left: 4px !important;
+        white-space: nowrap;
+    }
+
+    /* 4. 80문항 번호판 (4행 20열) */
     #omr-list {
         display: grid !important;
-        grid-template-columns: repeat(20, 1fr) !important; /* 20열 */
-        grid-template-rows: repeat(4, 1fr) !important;    /* 4행 */
-        grid-auto-flow: row !important; /* 왼쪽->오른쪽 순서 */
+        grid-template-columns: repeat(20, 1fr) !important;
+        grid-template-rows: repeat(4, 1fr) !important;
+        grid-auto-flow: row !important;
         gap: 3px 2px !important;
         width: 100% !important;
-        height: 100% !important;
+        height: 85px !important;
+        order: 1; /* 상단 배치 */
     }
 
-    /* 4. 번호 타일 디자인 (슬림형) */
     .omr-item {
         display: flex !important;
         align-items: center !important;
@@ -459,7 +484,7 @@ body.dark-mode #retryBtn {
     .omr-q-num {
         width: 100% !important;
         height: 100% !important;
-        min-height: 16px !important; /* 터치 가능 높이 */
+        min-height: 18px !important;
         font-size: 0.55rem !important;
         border-radius: 2px !important;
         margin: 0 !important;
@@ -471,32 +496,11 @@ body.dark-mode #retryBtn {
         font-weight: bold;
     }
 
-    /* 모바일 OMR에서 보기 선택 동그라미는 절대 숨김 */
-    .omr-options-wrapper {
-        display: none !important;
-    }
+    .omr-options-wrapper { display: none !important; }
 
-    /* 5. 메인 본문 레이아웃 조정 */
-    #main-container {
-        flex-direction: column;
-        width: 100%;
-        margin: 0;
-    }
-
-    #quiz-wrapper {
-        width: 100% !important;
-        padding: 15px 10px !important;
-        border-radius: 0;
-    }
-
-    .q-title {
-        font-size: 1.1rem !important;
-        line-height: 1.4;
-    }
-
-    .options label {
-        padding: 10px !important;
-        font-size: 1rem !important;
-        margin-bottom: 6px !important;
-    }
+    /* 5. 메인 본문 및 퀴즈 레이아웃 */
+    #main-container { flex-direction: column; width: 100%; margin: 0; }
+    #quiz-wrapper { width: 100% !important; padding: 15px 10px !important; border-radius: 0; }
+    .q-title { font-size: 1.05rem !important; line-height: 1.4; margin-bottom: 12px; }
+    .options label { padding: 10px !important; font-size: 0.95rem !important; margin-bottom: 8px !important; }
 }
