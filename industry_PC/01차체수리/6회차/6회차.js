@@ -1,3 +1,4 @@
+export const roundName = "차체수리 6회차";
 export const repairData =
 [
   // [1. 차체 구조 및 손상 진단 - 12문제]

@@ -1,3 +1,4 @@
+export const roundName = "차체수리 2회차";
 export const repairData =
 [
   {
