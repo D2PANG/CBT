@@ -1,399 +1,689 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
 :root {
-    --bg-color: #f4f6fa; 
-    --card-bg: #ffffff; 
-    --text-color: #222;
-    --option-bg: #f9fafc;
-    --option-border: #d9e2ef;
-    --status-bg: #ffffff;
-    --status-border: #1f3b73;
-    --omr-fill-bg: #fafafa;
-    --nav-bg: #1f3b73;
-    --explain-bg: #f0f8ff; /* 해설 배경 (라이트) */
+    --bg-color: #f1f5f9; 
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --text-primary: #1e293b; 
+    --text-secondary: #64748b;
+    --accent-blue: #2563eb; 
+    --accent-red: #ef4444;
+    --success-green: #22c55e; 
+    --navy-dark: #0f172a;
+    --border-color: #e2e8f0; 
+    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    --radius-lg: 24px;
+    --radius-md: 14px;
 }
 
-/* [2] 다크 모드 통합 설정 (보정 완료) */
 body.dark-mode {
-    --bg-color: #121212; 
-    --card-bg: #1e1e1e; 
-    --text-color: #e0e0e0;
-    --option-bg: #2a2a2a;      /* 보기 배경: 어두운 회색 */
-    --option-border: #444444;
-    --status-bg: #252525;
-    --status-border: #3a5ba0;
-    --omr-fill-bg: #2d2d2d;    /* 밀기 영역 배경 */
-    --nav-bg: #000000;
-    --explain-bg: #2d2d2d;     /* 해설 배경 (다크) */
+    --bg-color: #0f172a; 
+    --card-bg: #1e293b;
+    --text-primary: #f8fafc; 
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
 }
 
-/* [3] 다크모드 UI 세부 보정 */
-body.dark-mode .q-title { color: #ffffff; }
-body.dark-mode .omr-title { color: #8ab4f8; }
-body.dark-mode .omr-q-num { background-color: #333; color: #aaaaaa; }
-body.dark-mode .omr-option { border-color: #555; background-color: #252525; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-/* 메인 화면 버튼들 (눈부심 방지 및 가독성) */
-body.dark-mode .set-select-btn {
-    background: #2a2a2a !important; 
-    color: #e0e0e0 !important;
-    border: 1px solid #444 !important;
-}
-body.dark-mode .set-select-btn:hover {
-    background: #333 !important;
-    border-color: #555 !important;
+body {
+    margin: 0; 
+    font-family: 'Pretendard', sans-serif;
+    background-color: var(--bg-color); 
+    color: var(--text-primary);
+    line-height: 1.6; 
+    transition: background 0.3s ease;
 }
 
-/* 오답 및 기록 섹션 배경 (눈부심 차단) */
-body.dark-mode #history-section, 
-body.dark-mode #wrong-note-list,
-body.dark-mode #history-list {
-    background: #1e1e1e !important;
-    border-color: #333 !important;
+.no-drag, button, .st-switch, .round-card, .status-badge { 
+    user-select: none; 
 }
 
-/* 문제 보기(Options) 및 해설(Explain) 다크모드 대응 */
-body.dark-mode .options label {
-    background: var(--option-bg) !important;
-    border-color: var(--option-border) !important;
-    color: var(--text-color) !important;
+.q-text, .option-btn, .exp-text, .ans-label { 
+    user-select: text !important; 
 }
 
-body.dark-mode .explain {
-    background: var(--explain-bg) !important;
-    color: var(--text-color) !important;
-    border-left: 5px solid var(--status-border) !important;
-}
-
-body.dark-mode .explain strong {
-    color: #8ab4f8 !important; /* 정답 텍스트 강조색 */
-}
-
-/* OMR 선택 상태 보정 */
-body.dark-mode .omr-item.answered .omr-q-num { 
-    background-color: var(--status-border) !important; 
-    color: #fff !important; 
-}
-
-body.dark-mode .omr-option.selected { 
-    background-color: var(--status-border) !important; 
-    color: #000; 
-    border-color: var(--status-border) !important; 
-}
-
-/* [3] 레이아웃 초기화 */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-color); color: var(--text-color); padding-top: 105px; min-height: 100vh; }
-
-/* [4] 상단 영역 */
-#top-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1100;
-    height: 35px; /* 30px에서 살짝 늘림 */
-    background: var(--nav-bg);
-    display: flex;
-    justify-content: flex-end; /* 오른쪽 정렬 */
-    align-items: center;
-    padding: 0 15px;
-}
-
-#top-nav button {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    padding: 3px 15px;
-    border-radius: 15px; /* 더 둥글게 */
-    cursor: pointer;
-    font-size: 0.75rem;
-    transition: 0.2s;
-}
-
-#top-nav button:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-#status { position: fixed; top: 30px; left: 0; right: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; height: 50px; background: var(--status-bg); border-bottom: 3px solid var(--status-border); padding: 0 20px; }
-#status .page-title { font-size: 1.5rem; font-weight: 700; color: #1f3b73; }
-
-/* [5] 메인 컨테이너 */
-#main-container { display: flex; width: 95%; max-width: 1450px; margin: 10px auto; gap: 20px; align-items: flex-start; }
-#quiz-wrapper { flex: 1; background: var(--card-bg); border-radius: 12px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-
-/* [6] OMR 카드 (여기서 중복 제거 및 최적화) */
-#omr-card {
-    position: sticky; 
-    top: 90px; 
-    width: 320px;           /* 3열을 위해 살짝 넓힘 */
-    background: var(--card-bg); 
-    border-radius: 12px; 
-    padding: 12px; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    max-height: 85vh;       /* 화면의 85%까지 공간 확보 */
-    overflow-y: auto; 
-    flex-shrink: 0;
-}
-
-.omr-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; margin-bottom: 10px; }
-.omr-title { font-size: 0.85rem; font-weight: 700; color: #1f3b73; }
-
-/* [7] OMR 리스트 (세로 30줄 3열 핵심 로직) */
-#omr-list {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important; 
-    grid-template-rows: repeat(30, auto) !important;
-    grid-auto-flow: column !important;  /* 아래로 먼저 채우기 */
-    gap: 0px 8px !important;            /* 상하는 붙이고 좌우는 벌림 */
-}
-
-.omr-item { display: flex; align-items: center; padding: 2px 0; height: 24px; }
-.omr-q-num {
-    background-color: #e9ecef; color: #495057; border-radius: 4px;
-    width: 25px; height: 18px; line-height: 18px; text-align: center;
-    font-size: 0.7rem; font-weight: 600; cursor: pointer; margin-right: 5px;
-}
-
-/* OMR 상태별 색상 */
-.omr-item.answered .omr-q-num { background-color: #007bff !important; color: white !important; }
-.omr-item.correct .omr-q-num { background-color: #28a745 !important; color: white !important; }
-.omr-item.wrong .omr-q-num { background-color: #dc3545 !important; color: white !important; }
-
-/* 보기 점 디자인 */
-.omr-options-wrapper { display: flex; gap: 2px; }
-.omr-option { width: 13px; height: 13px; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; transition: 0.2s; }
-.omr-option.selected { background-color: #1f3b73 !important; border-color: #1f3b73 !important; }
-
-/* [8] 문제 및 보기 스타일 수정 */
-.question { margin-bottom: 40px; padding: 15px; border-bottom: 1px solid #eee; }
-.q-title { font-size: 1.2rem; margin-top: 10px; margin-bottom: 15px; display: block; }
-
-.options label { 
-    display: block; 
-    background: var(--option-bg); 
-    border: 2px solid var(--option-border); 
-    border-radius: 8px; 
-    padding: 12px; 
+/* 공통 버튼 효과 */
+button, .round-card { 
+    transition: all 0.2s; 
     cursor: pointer; 
-    margin-bottom: 8px; 
-    transition: all 0.2s ease; /* 부드러운 전환 추가 */
+    border: none; 
 }
 
-/* 선택된 상태: 라이트모드/다크모드 공통 대응 */
-.options label.selected { 
-    /* 라이트모드 기본값 */
-    background: #e0f7ff !important; 
-    border-color: #00bcd4 !important; 
-    color: #000000 !important;
+button:active, .round-card:active { 
+    transform: scale(0.96); 
 }
 
-/* 다크모드일 때 선택된 상태 강제 재설정 (우선순위 확보) */
-body.dark-mode .options label.selected {
-    background: #1a3a5f !important;
-    border-color: #3a86ff !important;
-    color: #ffffff !important;
-    box-shadow: 0 0 10px rgba(58, 134, 255, 0.3);
-}
-
-.options input { display: none; }
-
-/* =========================================
-   [NEW] OMR 상단 밀기 영역 및 제출 버튼 디자인 
-   ========================================= */
-/* 1. 일괄 선택 영역 슬림화 */
-.fill-all-container {
-    padding: 8px 12px !important; /* 위아래 패딩 축소 */
-    gap: 6px !important;
-}
-
-.fill-buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px; /* 버튼 사이 간격 */
-}
-
-/* 번호 버튼: 동그랗고 예쁘게 */
-.fill-btn {
-    flex: 1;
-    height: 15px;
-    border-radius: 16px; /* 완벽하게 둥근 모양 */
-    border: 1px solid var(--option-border);
-    background: var(--card-bg);
-    color: var(--text-color);
-    font-size: 0.60rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.fill-btn:hover {
-    background: var(--status-border);
-    color: white;
-}
-
-/* 하단 제출 버튼 영역 */
-.omr-submit-area {
-    display: flex;
-    gap: 8px;
-    margin-top: 5px;
-}
-
-.omr-submit-btn {
-    flex: 1;
-    height: 20px;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 0.8rem;
-    transition: 0.2s;
-}
-
-.btn-direct { 
-    background: #6c757d; /* 회색 */
+/* 상단 내비 */
+.top-nav { 
+    background: var(--navy-dark); 
     color: white; 
-}
-.btn-direct:hover { background: #5a6268; }
-
-.btn-final { 
-    background: #1f3b73; /* 남색 */
-    color: white; 
-}
-.btn-final:hover { background: #162a52; }
-
-/* 다크모드 전용 보정 */
-body.dark-mode .btn-final { background: #3a5ba0; }
-body.dark-mode .btn-final:hover { background: #4a6bb0; }
-
-/* 채점 완료 후 공통 스타일 */
-.question.correct {
-    background-color: rgba(40, 167, 69, 0.05); /* 아주 연한 초록 배경 */
-    border-left: 8px solid #28a745 !important;
+    height: 60px; 
+    display: flex; 
+    align-items: center; 
+    position: sticky; 
+    top: 0; 
+    z-index: 2000; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2); 
 }
 
-.question.wrong {
-    background-color: rgba(220, 53, 69, 0.05); /* 아주 연한 빨간 배경 */
-    border-left: 8px solid #dc3545 !important;
+.nav-inner { 
+    width: 100%; 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 0 20px; 
 }
 
-/* 맞음/틀림 아이콘 표시 */
-.q-title {
-    position: relative;
-    padding-left: 5px;
+#main-title { 
+    font-size: 1.15rem; 
+    font-weight: 800; 
+    color: #38bdf8; 
 }
 
-.result-icon {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-right: 8px;
-    vertical-align: middle;
+.container { 
+    width: 100%; 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    padding: 20px; 
 }
 
-.correct .result-icon { color: #28a745; }
-.wrong .result-icon { color: #dc3545; }
+.glass-card { 
+    background: var(--card-bg); 
+    border: 1px solid var(--border-color); 
+    border-radius: var(--radius-lg); 
+    padding: 20px; 
+    box-shadow: var(--shadow-lg); 
+    margin-bottom: 20px; 
+}
 
-/* 다크모드 시 배경색 보정 */
-body.dark-mode .question.correct { background-color: rgba(40, 167, 69, 0.15); }
-body.dark-mode .question.wrong { background-color: rgba(220, 53, 69, 0.15); }
-
-/* [9] 모바일 최적화 (상단 고정 제어바 + 하단 서랍) */
-@media (max-width: 768px) {
-    /* 상단 바 두께만큼 본문 밀기 */
-    body { padding-top: 135px !important; } 
-    
-    #status {
-        height: 55px !important;
-        padding: 0 15px !important;
-        z-index: 1001; /* 제어바보다 위 */
-    }
-
-    #status .page-title { font-size: 1rem !important; }
-
-    /* PC와 모바일 메인화면 모두에서 기본적으로 숨김 */
-.mobile-control-bar { 
+.hidden { 
     display: none !important; 
 }
 
-@media (max-width: 768px) {
-    /* 퀴즈가 시작되어 active 클래스가 붙었을 때만 노출 */
-    .mobile-control-bar.active {
-        display: flex !important;
-        position: fixed;
-        top: 85px;
-        left: 0;
-        right: 0;
-        height: 50px;
-        background: var(--card-bg);
-        border-bottom: 2px solid var(--status-border);
-        z-index: 1000;
-        padding: 5px 10px;
-        gap: 5px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+/* 메인 대시보드 배너 가로 배치 */
+.banner-flex-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+    align-items: stretch;
+}
+
+.banner-flex-row .dashboard, 
+.banner-flex-row .settings-panel-slim {
+    flex: 1;
+    margin-bottom: 0 !important;
+    padding: 15px !important;
+    min-width: 0;
+}
+
+.settings-flex { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+    align-items: flex-start; 
+}
+
+.st-switch { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    cursor: pointer; 
+}
+
+.st-switch input { 
+    display: none; 
+}
+
+.slider { 
+    width: 34px; 
+    height: 18px; 
+    background: #ccc; 
+    border-radius: 20px; 
+    position: relative; 
+    transition: 0.3s; 
+}
+
+.slider:before { 
+    content: ""; 
+    position: absolute; 
+    height: 14px; 
+    width: 14px; 
+    left: 2px; 
+    bottom: 2px; 
+    background: white; 
+    border-radius: 50%; 
+    transition: 0.3s; 
+}
+
+input:checked + .slider { 
+    background: var(--accent-blue); 
+}
+
+input:checked + .slider:before { 
+    transform: translateX(16px); 
+}
+
+.lbl-txt { 
+    font-size: 0.75rem; 
+    font-weight: 700; 
+    white-space: nowrap;
+}
+
+/* 통합 액션 버튼 디자인 */
+.main-action-independent {
+    margin-bottom: 15px;
+}
+
+.btn-unified-action {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 25px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    border-radius: var(--radius-md);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.btn-unified-action.blue-style {
+    border-left: 8px solid var(--accent-blue);
+}
+
+.wrong-note-section {
+    padding: 0 !important; 
+    overflow: hidden;
+    border: none !important;
+    background: none !important;
+    box-shadow: none !important;
+}
+
+.wrong-note-section .accordion-trigger {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 25px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    border-radius: var(--radius-md);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-left: 8px solid var(--accent-red);
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+}
+
+.wrong-note-section .accordion-body {
+    background: var(--card-bg);
+    margin-top: 10px;
+    padding: 20px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+/* 퀴즈 퀵 설정 상단 고정 바 */
+.quiz-quick-settings-fixed { 
+    position: sticky; 
+    top: 60px; 
+    left: 0; 
+    width: 100%; 
+    background: var(--card-bg); 
+    border-bottom: 1px solid var(--border-color); 
+    padding: 12px 20px; 
+    z-index: 1500; 
+    margin-bottom: 20px; 
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+}
+
+.quick-flex-container { 
+    display: flex; 
+    flex-direction: row; 
+    align-items: center; 
+    gap: 40px; 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    flex-wrap: wrap; 
+}
+
+/* 문제지 디자인 */
+.quiz-main-layout { 
+    display: flex; 
+    gap: 20px; 
+    align-items: flex-start; 
+}
+
+.question-column { 
+    flex: 2.5; 
+}
+
+.question-container { 
+    background: var(--card-bg); 
+    padding: 30px; 
+    border-radius: var(--radius-lg); 
+    border: 1px solid var(--border-color); 
+    margin-bottom: 25px; 
+}
+
+.option-btn { 
+    width: 100%; 
+    text-align: left; 
+    padding: 16px 22px; 
+    border-radius: 12px; 
+    border: 2px solid var(--border-color); 
+    background: white; 
+    margin-bottom: 10px; 
+    font-weight: 600; 
+    font-size: 1.1rem; 
+}
+
+.option-btn.selected { 
+    background: var(--accent-blue); 
+    color: white; 
+    border-color: var(--accent-blue); 
+}
+
+/* PC OMR 사이드바 */
+.omr-column { 
+    flex: 1; 
+    min-width: 280px; 
+    position: sticky; 
+    top: 140px; 
+}
+
+.omr-sticky-card { 
+    padding: 20px; 
+    max-height: calc(100vh - 220px); 
+    display: flex; 
+    flex-direction: column; 
+}
+
+#omr-buttons-grid, #result-omr-buttons-grid { 
+    flex: 1; 
+    overflow-y: auto; 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 8px; 
+}
+
+/* 결과 화면 고정 바 */
+.result-summary-fixed { 
+    position: sticky; 
+    top: 60px; 
+    left: 0; 
+    width: 100%; 
+    z-index: 1500; 
+    background: var(--bg-color); 
+    padding: 10px 0; 
+}
+
+.res-fixed-inner { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 12px 25px !important; 
+    border: 1px solid var(--accent-blue); 
+}
+
+.score-highlight { 
+    color: var(--accent-red); 
+    font-size: 1.4rem; 
+    font-weight: 900; 
+}
+
+/* 모바일 OMR 강력 차단 */
+@media (max-width: 1024px) {
+    .omr-column, #omr-sidebar, #result-omr-sidebar { 
+        display: none !important; 
+    }
+    .question-column { 
+        flex: 1 1 100% !important; 
+    }
+    .quiz-main-layout { 
+        display: block; 
     }
 }
 
-    .mobile-control-bar button {
-        flex: 1;
-        height: 100%;
-        border: none;
-        border-radius: 6px;
-        font-weight: bold;
+/* 모바일 하단 내비게이션 고정 */
+.quiz-bottom-nav { 
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 70px; 
+    background: var(--card-bg); 
+    border-top: 1px solid var(--border-color); 
+    display: flex; 
+    padding: 10px 20px; 
+    gap: 15px; 
+    z-index: 2500; 
+}
+
+.btn-nav-prev, .btn-nav-next { 
+    flex: 1; 
+    border-radius: 12px; 
+    font-weight: 800; 
+    font-size: 1.1rem; 
+}
+
+.btn-nav-prev { background: #e2e8f0; color: #475569; }
+.btn-nav-next { background: var(--accent-blue); color: white; }
+
+/* 왼손잡이 모드 순서 교체 */
+.left-hand-mode-active #btn-move-prev { order: 2; }
+.left-hand-mode-active #btn-move-next { order: 1; }
+
+/* 폰트 크기 조절 */
+#main-body.font-small .q-text { font-size: 1.0rem !important; }
+#main-body.font-medium .q-text { font-size: 1.25rem !important; }
+#main-body.font-large .q-text { font-size: 1.6rem !important; }
+
+/* 성적 팝업 모달 */
+.modal-overlay { 
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.6); 
+    z-index: 3000; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+
+.modal-window { 
+    width: 90%; 
+    max-width: 650px; 
+    padding: 35px; 
+    border-radius: 30px; 
+    background: var(--card-bg); 
+    animation: modalPopUp 0.3s ease-out; 
+}
+
+@keyframes modalPopUp { 
+    from { transform: scale(0.9); opacity: 0; } 
+    to { transform: scale(1); opacity: 1; } 
+}
+
+/* 성적 통계 막대그래프 스크롤 레이아웃 */
+.chart-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 20px;
+    margin-top: 20px;
+}
+
+#chart-canvas-area { 
+    height: 240px; 
+    display: flex; 
+    align-items: flex-end; 
+    justify-content: flex-start; 
+    gap: 30px; 
+    border-bottom: 2px solid #ddd; 
+    padding: 0 10px 45px 10px;
+    min-width: 100%; 
+}
+
+.chart-bar { 
+    flex: 0 0 80px; 
+    background: linear-gradient(to top, var(--accent-blue), #60a5fa); 
+    border-radius: 8px 8px 0 0; 
+    position: relative; 
+}
+
+.bar-score { 
+    position: absolute; 
+    top: -30px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    font-weight: 800; 
+    color: var(--accent-blue); 
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.bar-label {
+    position: absolute;
+    bottom: -45px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    text-align: center;
+    width: 100px;
+    word-break: break-all;
+}
+
+/* 회차별 오답 초기화 버튼 */
+.btn-danger-mini {
+    background: #fee2e2;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* 개별 오답 삭제 버튼 */
+.btn-round-del {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-left: 10px;
+}
+
+/* 선택 회차 강조 */
+.round-card.selected {
+    border: 3px solid var(--accent-blue) !important;
+    background: #eff6ff !important;
+}
+body.dark-mode .round-card.selected {
+    background: #1e3a8a !important;
+}
+
+/* 글자크기 제어 아이템 한 줄 배치 */
+.font-control-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.f-btns {
+    display: flex;
+    gap: 5px;
+}
+
+/* 오답 선택 풀기 전용 버튼 스타일 */
+.btn-wrong-multi {
+    background: var(--accent-blue);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+}
+
+/* 오답 목록 회차 행 스타일 */
+.wrong-item-row {
+    background: rgba(0,0,0,0.03);
+    padding: 10px 15px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    transition: 0.2s;
+    border: 2px solid transparent;
+}
+
+.wrong-item-row.selected {
+    border-color: var(--accent-blue);
+    background: rgba(37, 99, 235, 0.05);
+}
+
+/* 스크롤바 디자인 (브라우저 공통) */
+.wrong-scroll-container::-webkit-scrollbar {
+    width: 6px;
+}
+.wrong-scroll-container::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 10px;
+}
+
+/* PC OMR 정밀 튜닝 및 회차 버튼 PC 가로 배치 */
+@media (min-width: 1025px) {
+    .omr-sticky-card {
+        padding: 10px !important;
+        max-height: 90vh !important; 
+        overflow: hidden !important; 
+    }
+
+    .omr-bulk-marking-pc {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .bulk-lbl-pc { font-size: 0.8rem; font-weight: bold; }
+    .bulk-btns-pc { display: flex; gap: 4px; }
+    .bulk-btns-pc button {
+        width: 26px; height: 26px;
         font-size: 0.75rem;
+        border-radius: 6px;
+        background: #f1f5f9;
+        font-weight: 800;
+    }
+
+    #omr-buttons-grid, #result-omr-buttons-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-rows: repeat(30, auto) !important;
+        grid-auto-flow: column !important;
+        gap: 1px 12px !important; 
+        overflow: hidden !important;
+    }
+
+    .omr-row-item {
+        padding: 1px 2px !important;
+        height: 20px !important; 
+        display: flex;
+        align-items: center;
+        gap: 0; 
+        border-radius: 4px;
         cursor: pointer;
     }
 
-    /* 제어바 내 버튼 색상 */
-    .m-btn-fill { background: var(--option-bg); border: 1px solid var(--option-border) !important; color: var(--text-color); }
-    .m-btn-direct { background: #6c757d; color: white; }
-    .m-btn-submit { background: #1f3b73; color: white; }
-
-    #main-container {
-        display: block; 
-        width: 100%;
-        padding: 0 10px 100px 10px;
+    .omr-num {
+        width: 30px !important; 
+        font-size: 0.65rem !important;
+        font-weight: 700;
+        color: var(--text-secondary);
+        display: inline-block;
     }
 
-    /* OMR 카드 서랍 설정 */
-    #omr-card {
-        position: fixed !important;
-        bottom: -100%;
-        left: 0 !important;
-        right: 0 !important;
-        top: auto !important;
-        width: 100% !important;
-        height: 60vh !important;
-        z-index: 2000;
-        border-radius: 25px 25px 0 0;
-        box-shadow: 0 -8px 30px rgba(0,0,0,0.3);
-        transition: bottom 0.35s ease;
-        padding: 15px !important;
+    .omr-row-item.res-correct .omr-num { background: rgba(34, 197, 94, 0.2); color: #15803d; border-radius: 3px; }
+    .omr-row-item.res-wrong .omr-num { background: rgba(239, 68, 68, 0.2); color: #b91c1c; border-radius: 3px; }
+
+    .omr-row-item.solved .omr-num {
+        color: var(--accent-blue);
     }
 
-    #omr-card.active { bottom: 0 !important; }
-
-    /* 서랍 안의 밀기 영역은 중복되므로 모바일에선 숨김 (상단바에서 처리) */
-    #omr-card .fill-all-container { display: none !important; }
-
-    #omr-list {
+    .omr-circles { 
+        display: flex; 
+        align-items: center; 
+        gap: 2px !important; 
         flex: 1;
-        overflow-y: auto;
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 8px !important;
+    }
+    
+    .circle-dot {
+        width: 12px !important; 
+        height: 12px !important;
+        border: 1px solid #cbd5e1;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem !important; 
+        color: #94a3b8;
+        transition: 0.2s;
+        cursor: pointer;
+    }
+
+    .circle-dot.filled {
+        background: var(--accent-blue) !important;
+        border-color: var(--accent-blue) !important;
+        color: white !important;
+    }
+
+    .omr-row-item.active {
+        background: rgba(37, 99, 235, 0.1);
+    }
+
+    .omr-header-pc { font-size: 0.9rem; font-weight: 800; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 10px; text-align: center; }
+
+    /* [PC 회차 선택 버튼 강화] */
+    .round-card-grid {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 15px !important;
+        margin-top: 20px !important;
+    }
+    .round-card {
+        flex: 0 0 160px !important;
+        padding: 15px !important;
+        min-height: 90px !important;
+        border-radius: 18px !important;
+        text-align: center;
+    }
+    .round-card strong {
+        font-size: 1.1rem !important; /* PC 버전 폰트 상향 */
+        display: block;
+        margin-bottom: 8px;
+        word-break: keep-all;
+    }
+    .round-card small {
+        font-size: 0.8rem !important;
     }
 }
 
-/* PC에서는 상단 제어바 숨기기 */
-.mobile-control-bar { display: none; }
-
-/* [10] 드래그 방지 및 기타 설정 (여기부턴 기존 유지) */
-body {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-.q-title, .options label, .explain, .q-source, .round-name {
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
+/* [모바일 회차 선택 버튼 정밀 튜닝] */
+@media screen and (max-width: 768px) {
+    .round-card-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 8px !important;
+        margin-top: 15px !important;
+    }
+    .round-card {
+        padding: 10px 5px !important; /* 여백 미세 확대 */
+        min-height: 65px !important; /* 높이 미세 확대 */
+        border-radius: 10px !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .round-card strong {
+        font-size: 0.75rem !important; /* 모바일 폰트 시인성 확보를 위해 키움 */
+        line-height: 1.2 !important;
+        display: block;
+        word-break: keep-all; /* 단어 단위 줄바꿈으로 깔끔하게 */
+        text-align: center;
+    }
+    .round-card small {
+        font-size: 0.6rem !important;
+        margin-top: 3px !important;
+        opacity: 0.8;
+    }
 }

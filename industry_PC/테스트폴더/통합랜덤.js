@@ -1,619 +1,505 @@
-// 1. 창고(통합문제.js)에서 데이터를 가져옵니다.
-import { quizSets } from './통합문제.js';
+/* 통합랜덤.js - Ver 18.5 순정 규격 기반 최종 수리 */
 
-// 변수 설정
-let currentQuestions = []; 
-let userAnswers = [];      
-let timerInterval; 
-let timeLeft = 3600; 
-let lastQuizTitle = ""; 
+let questions = []; 
+let userAnswers = {}; 
+let currentIdx = 0;
+let timerInterval = null;
+let isMultiSelectMode = false;
+let secretResetCount = 0;
+let lastUsedExamData = []; 
+let lastWrongAnswers = []; 
 
-let adminClickCount = 0;
-let adminClickTimer = null;
-
-// [기존 변수 설정 구역 아래에 추가]
-let isDarkMode = localStorage.getItem("theme") === "dark";
-
-// [유틸리티] 문제와 보기를 무작위로 섞어주는 공통 함수
-function shuffleLogic(questions) {
-    const newQuestions = JSON.parse(JSON.stringify(questions)); 
-    newQuestions.sort(() => Math.random() - 0.5);
-    newQuestions.forEach(q => {
-        const correctOption = q.options[q.answer]; 
-        for (let i = q.options.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [q.options[i], q.options[j]] = [q.options[j], q.options[i]];
+window.onload = () => {
+    const dataCheck = setInterval(() => {
+        if (window.quizSets) {
+            clearInterval(dataCheck);
+            initApp();
         }
-        q.answer = q.options.indexOf(correctOption);
-    });
-    return newQuestions;
-}
+    }, 100);
 
-// [실행] 페이지 시작 시 설정
-function init() {
-    applyTheme();
-    renderMenu();
-    
-    // 브라우저 뒤로가기 감지 및 이탈 방지
-    window.addEventListener('popstate', (event) => {
-        if (document.getElementById("quiz-wrapper").style.display === "block") {
-            if (confirm("시험을 중단하고 나가시겠습니까? 작성 중인 답안이 사라집니다.")) {
-                clearQuizInterface(false); 
+    window.history.pushState(null, null, window.location.href);
+    window.onpopstate = function() {
+        const isQuiz = !document.getElementById('quiz-screen').classList.contains('hidden');
+        const isResult = !document.getElementById('result-screen').classList.contains('hidden');
+        
+        if (isQuiz || isResult) {
+            const msg = isResult ? "회차 선택 화면으로 가시겠습니까?" : "시험을 중지하고 메인으로 돌아가시겠습니까?";
+            if (confirm(msg)) {
+                location.reload();
             } else {
-                history.pushState({ page: 'quiz' }, null, "");
+                window.history.pushState(null, null, window.location.href);
             }
-        }
-    });
-
-    window.onbeforeunload = function (e) {
-        if (document.getElementById("quiz-wrapper").style.display === "block") {
-            const msg = "변경사항이 저장되지 않을 수 있습니다.";
-            e = e || window.event;
-            if (e) e.returnValue = msg;
-            return msg;
+        } else {
+            window.history.pushState(null, null, window.location.href);
         }
     };
+};
+
+function initApp() {
+    renderRoundCards();
+    updateStatsDashboard();
+    renderWrongNoteArea();
+    updateFontSize(localStorage.getItem('cbt_font_size') || 'medium');
+    if (localStorage.getItem('cbt_theme') === 'dark') {
+        toggleTheme();
+    }
 }
 
-/// [메뉴] 렌더링 - 대시보드 및 상세 목록 복구
-function renderMenu() {
-    const menuGrid = document.getElementById("menu-grid");
-    const activeSets = quizSets.filter(set => set.repairData && set.repairData.length > 0);
-    const allWrongNotes = JSON.parse(localStorage.getItem("myWrongNotesV2")) || {};
-    const studyHistory = JSON.parse(localStorage.getItem("studyHistory")) || [];
-    
-    // 오답노트 회차 정렬
-    const roundKeys = Object.keys(allWrongNotes)
-        .filter(key => allWrongNotes[key].length > 0)
-        .sort((a, b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
-
-    // 대시보드용 데이터 계산
-    const recent5 = studyHistory.slice(0, 5);
-    const avgScore5 = studyHistory.length > 0 ? Math.round(recent5.reduce((acc, cur) => acc + cur.percent, 0) / recent5.length) : 0;
-    const lastScore = studyHistory.length > 0 ? studyHistory[0].percent : 0;
-
-    let html = "";
-
-    // --- [1. 학습 성취도 대시보드 & 상세 목록 복구] ---
-    html += `
-        <div style="grid-column: 1 / -1; margin-bottom: 25px; user-select: none;">
-            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                <div style="flex: 1; background: #f0f4f8; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #d1d9e6;">
-                    <div style="font-size: 0.75rem; color: #5c6b89; margin-bottom: 5px; font-weight: bold;">📈 최근 5회 평균</div>
-                    <div style="font-size: 1.6rem; font-weight: bold; color: #1f3b73;">${avgScore5}<span style="font-size: 0.9rem; margin-left:2px;">점</span></div>
-                </div>
-                <div style="flex: 1; background: #fff5f5; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #f8d7da;">
-                    <div style="font-size: 0.75rem; color: #856404; margin-bottom: 5px; font-weight: bold;">
-                        🎯 최근 점수 
-                        <span onclick="showStatsChart()" style="color: #d9534f; cursor: pointer; text-decoration: underline; margin-left:5px; font-size: 0.7rem;">[성적통계]</span>
-                    </div>
-                    <div style="font-size: 1.6rem; font-weight: bold; color: #d9534f;">${lastScore}<span style="font-size: 0.9rem; margin-left:2px;">점</span></div>
-                </div>
-            </div>
-
-            <div id="history-section" style="background: white; border: 1px solid #eee; border-radius: 12px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
-                <div onclick="toggleHistoryList()" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; padding:8px 10px;">
-                    <span style="font-weight:bold; color:#666;">📝 최근 학습 기록 (최대 30개)</span>
-                    <span id="history-arrow" style="color:#aaa;">▼</span>
-                </div>
-                <div id="history-list" style="display:none; max-height: 250px; overflow-y: auto; margin-top: 10px; border-top: 1px solid #f5f5f5;">
-                    ${studyHistory.length > 0 ? studyHistory.map(h => `
-                        <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px; border-bottom: 1px solid #f9f9f9; font-size: 0.8rem;">
-                            <div style="display:flex; flex-direction:column;">
-                                <span style="color:#333; font-weight:500;">${h.roundName}</span>
-                                <span style="color:#999; font-size:0.7rem;">${h.date} ${h.time || ''}</span>
-                            </div>
-                            <span style="font-weight:bold; font-size:0.9rem; color:${h.percent >= 60 ? '#28a745' : '#dc3545'};">${h.percent}점</span>
-                        </div>
-                    `).join('') : '<div style="text-align:center; padding:30px; color:#ccc; font-size:0.8rem;">아직 기록이 없습니다.</div>'}
-                </div>
-            </div>
-        </div>
-    `;
-
-    // --- [2. 오답 복습하기 영역] ---
-    html += `
-        <div style="grid-column: 1 / -1; margin-bottom: 20px; border: 1px solid #eec; border-radius: 12px; background: #fffaf0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); user-select: none;">
-            <div onclick="toggleWrongNoteList()" style="padding: 15px 20px; background: #fff5f5; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #fce4e4;">
-                <strong style="color: #d9534f; font-size: 1rem;">📕 오답 복습하기 (${roundKeys.length}개 회차)</strong>
-                <span id="wrong-arrow" style="transition: transform 0.3s;">▼</span>
-            </div>
-            <div id="wrong-note-list" style="display: none; padding: 15px; background: #fff;">
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
-${roundKeys.length > 0 ? roundKeys.map(roundName => {
-    const roundWrongs = allWrongNotes[roundName];
-    const count = roundWrongs.length;
-    return `
-        <div style="display: flex; align-items: stretch; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
-            <button onclick="startWrongNote('${roundName}')" style="flex: 1; background: white; border: none; padding: 12px; text-align: left; cursor: pointer;">
-                <span style="font-weight: bold; color: #333; font-size: 0.9rem;">${roundName}</span><br>
-                <span style="font-size: 0.75rem; color: #d9534f;">${count}문제 저장됨</span>
-            </button>
-            <button onclick="clearRound('${roundName}')" style="background: #fdf2f2; border: none; border-left: 1px solid #eee; width: 45px; color: #d9534f; cursor: pointer;">✕</button>
-        </div>
-    `;
-                    }).join('') : '<div style="grid-column: 1 / -1; text-align:center; padding: 10px; color: #aaa; font-size: 0.8rem;">오답이 없습니다.</div>'}
-                </div>
-            </div>
-        </div>
-    `;
-
-    // --- [3. 통합 랜덤 및 정규 회차 영역] ---
-    html += `
-        <div style="grid-column: 1 / -1; margin-bottom: 25px;">
-            <button onclick="startIntegratedRandom()" style="width: 100%; height: 56px; background: linear-gradient(135deg, #1f3b73, #3a63ad); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(31, 59, 115, 0.2); user-select: none;">
-                🎲 모든 회차 통합 랜덤 (80문제)
-            </button>
-        </div>
-        <div style="grid-column: 1 / -1; margin-bottom: 10px; font-weight: bold; color: #666; font-size: 0.9rem; user-select: none;">📖 정규 회차</div>
-    `;
-
+function renderRoundCards() {
+    const grid = document.getElementById('round-grid-display');
+    grid.innerHTML = '';
+    const activeSets = window.quizSets.filter(set => set.repairData && set.repairData.length > 0);
     activeSets.forEach(set => {
-        html += `
-            <button class="set-select-btn" onclick="startQuiz('${set.id}')" style="background: white; border: 1px solid #eee; color: #333; border-radius: 10px; padding: 15px; user-select: none;">
-                <strong style="font-size: 1rem;">${set.roundName}</strong><br>
-                <span style="font-size:0.8rem; color: #888;">(${set.repairData.length}문항)</span>
-            </button>
-        `;
+        const card = document.createElement('div');
+        card.className = 'round-card glass-card';
+        card.innerHTML = `<strong>${set.roundName}</strong><small>${set.repairData.length} 문항</small>`;
+        card.onclick = () => {
+            if (isMultiSelectMode) {
+                card.classList.toggle('selected');
+                document.getElementById('btn-multi-start').classList.toggle('hidden', document.querySelectorAll('.round-card.selected').length === 0);
+            } else {
+                startExamProcess([set], false);
+            }
+        };
+        grid.appendChild(card);
+    });
+}
+
+function toggleMultiMode() {
+    isMultiSelectMode = document.getElementById('multi-mode-chk').checked;
+    if (!isMultiSelectMode) {
+        document.querySelectorAll('.round-card').forEach(c => c.classList.remove('selected'));
+        document.getElementById('btn-multi-start').classList.add('hidden');
+    }
+}
+
+function startExam(type) {
+    let sets = [];
+    if (type === 'full') {
+        sets = window.quizSets.filter(set => set.repairData && set.repairData.length > 0);
+    } else {
+        document.querySelectorAll('.round-card.selected').forEach(c => {
+            const name = c.querySelector('strong').innerText;
+            sets.push(window.quizSets.find(s => s.roundName === name));
+        });
+    }
+    startExamProcess(sets, true);
+}
+
+function startExamProcess(sets, isBalanced) {
+    let pool = [];
+    if (isBalanced && sets.length > 0) {
+        const targetTotal = 80;
+        const perSet = Math.floor(targetTotal / sets.length);
+        let extra = targetTotal % sets.length;
+        sets.forEach(set => {
+            let count = perSet + (extra > 0 ? 1 : 0);
+            extra--;
+            let shuffledSet = shuffle([...set.repairData]);
+            pool.push(...shuffledSet.slice(0, count).map(q => ({ ...q, originalRound: set.roundName })));
+        });
+    } else {
+        sets.forEach(set => {
+            set.repairData.forEach(q => { pool.push({ ...q, originalRound: set.roundName }); });
+        });
+    }
+    
+    const initialPool = pool.map(q => {
+        const originalText = q.options[q.answer];
+        return { ...q, correctAnswerText: originalText, originalRound: q.fromRound || q.originalRound };
     });
 
-    menuGrid.innerHTML = html;
+    lastUsedExamData = JSON.parse(JSON.stringify(initialPool));
+    questions = initialPool.map(q => ({ ...q, options: shuffle([...q.options]) }));
+    questions = shuffle(questions);
+    launchQuiz();
 }
 
-// 상세 목록 토글 함수 복구
-window.toggleHistoryList = () => {
-    const list = document.getElementById("history-list");
-    const arrow = document.getElementById("history-arrow");
-    if (list.style.display === "none") {
-        list.style.display = "block";
-        arrow.textContent = "▲";
-        arrow.style.color = "#1f3b73";
-    } else {
-        list.style.display = "none";
-        arrow.textContent = "▼";
-        arrow.style.color = "#aaa";
-    }
-};
-
-// [기능] 퀴즈 인터페이스 정리 (메인 화면 복귀 시 모바일 제어바 제거 추가)
-function clearQuizInterface(pushBack = true) {
-    document.getElementById("quiz-menu").style.display = "block";
-    document.getElementById("quiz-wrapper").style.display = "none";
-    document.getElementById("omr-card").style.display = "none";
-    
-    // 모바일 제어바 숨김
-    const mBar = document.querySelector(".mobile-control-bar");
-    if (mBar) mBar.classList.remove("active");
-
-    if (timerInterval) clearInterval(timerInterval);
-    document.getElementById("main-title").innerHTML = "문제 은행";
-    if (pushBack && history.state && history.state.page === 'quiz') {
-        history.back();
-    }
-    renderMenu();
-    window.scrollTo(0, 0);
+function launchQuiz() {
+    userAnswers = {};
+    currentIdx = 0;
+    const isInstant = document.getElementById('setting-instant-feedback').checked;
+    const isOneByOne = document.getElementById('setting-one-by-one').checked;
+    document.getElementById('home-screen').classList.add('hidden');
+    document.getElementById('quiz-screen').classList.remove('hidden');
+    document.getElementById('result-screen').classList.add('hidden');
+    document.getElementById('quiz-status-area').classList.remove('hidden');
+    document.getElementById('quiz-nav-group').style.display = isOneByOne ? 'flex' : 'none';
+    document.getElementById('left-hand-wrap').style.display = isOneByOne ? 'flex' : 'none';
+    document.getElementById('auto-scroll-wrap').style.display = isInstant ? 'none' : 'flex';
+    renderQuestion();
+    renderOMR();
+    if (!isInstant) startTimer();
 }
 
-window.retryCurrentQuiz = () => {
-    if (!confirm("현재 회차를 처음부터 다시 푸시겠습니까?")) return;
-    currentQuestions = shuffleLogic(currentQuestions);
-    startQuizProcess(lastQuizTitle);
-};
+function renderQuestion() {
+    const display = document.getElementById('quiz-display-area');
+    const isOneByOne = document.getElementById('setting-one-by-one').checked;
+    const isInstant = document.getElementById('setting-instant-feedback').checked;
+    if (isOneByOne) { display.innerHTML = generateQuestionHTML(questions[currentIdx], currentIdx, isInstant); }
+    else { display.innerHTML = questions.map((q, i) => generateQuestionHTML(q, i, isInstant)).join(''); }
+    updateProgressDisplay();
+    highlightOMRRow();
+}
 
-// [수정] 퀴즈 시작 프로세스 (모바일 제어바 노출 추가)
-function startQuizProcess(title) {
-    lastQuizTitle = title;
-    if (!(history.state && history.state.page === 'quiz')) {
-        history.pushState({ page: 'quiz' }, null, "");
+function generateQuestionHTML(q, idx, isInstant) {
+    let feedbackContent = '';
+    let feedbackHidden = 'hidden';
+    if (isInstant && userAnswers[idx] !== undefined) {
+        feedbackHidden = '';
+        const isCorrect = q.options[userAnswers[idx]] === q.correctAnswerText;
+        feedbackContent = isCorrect ? '<strong style="color:var(--success-green)">✅ 정답입니다!</strong>' : '<strong style="color:var(--accent-red)">❌ 틀렸습니다.</strong>';
     }
-    document.getElementById("quiz-menu").style.display = "none";
-    document.getElementById("quiz-wrapper").style.display = "block";
-    document.getElementById("omr-card").style.display = "block"; 
-    
-    // 모바일 제어바 활성화
-    const mBar = document.querySelector(".mobile-control-bar");
-    if (mBar && window.innerWidth <= 768) {
-        mBar.classList.add("active");
-    }
-
-    document.getElementById("main-title").innerHTML = `
-        <div style="display:flex; align-items:center; width:100%; justify-content: space-between; user-select: none;">
-            <div style="display:flex; align-items:center;">
-                <span style="font-size: 1rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">${title}</span>
+    const wrongBadge = q.wrongCount ? `<span style="color:var(--accent-red); margin-left:10px; font-weight:bold;">(누적 오답: ${q.wrongCount}회)</span>` : '';
+    return `
+        <div class="question-container" id="q-block-${idx}">
+            <div class="q-header">
+                <span class="q-from">${q.originalRound}${wrongBadge}</span>
+                <p class="q-text"><strong>Q${idx + 1}.</strong> ${q.question}</p>
             </div>
-            <div id="header-score-area" style="display:none; align-items:center; gap:8px;"></div>
+            <div class="options-list">
+                ${q.options.map((opt, i) => `
+                    <button class="option-btn ${userAnswers[idx] === i ? 'selected' : ''}" id="opt-${idx}-${i}" onclick="selectAnswer(${idx}, ${i})">${i + 1}. ${opt}</button>
+                `).join('')}
+            </div>
+            <div id="feedback-${idx}" class="feedback-box ${feedbackHidden}">
+                <div class="instant-result-tag" id="instant-tag-${idx}">${feedbackContent}</div>
+                <span class="ans-label">정답: ${q.correctAnswerText}</span>
+                <p class="exp-text">해설: ${q.explain}</p>
+            </div>
         </div>
     `;
-    renderQuiz();
-    startTimer();
 }
 
-// [1] 바로 제출 (확인 없이 즉시 실행)
-window.directSubmit = () => {
-    processSubmit();
-};
-
-// [2] 일반 제출 (미풀이 체크 및 스크롤 이동 기능 포함)
-window.submitQuiz = () => {
-    const unAnsweredIdx = userAnswers.findIndex(a => a === -1);
-    
-    if (unAnsweredIdx !== -1) {
-        if (confirm(`아직 풀지 않은 문제가 있습니다. (${unAnsweredIdx + 1}번 등)\n이대로 제출하시겠습니까? (미풀이는 오답 처리)`)) {
-            processSubmit();
-        } else {
-            window.scrollToQ(unAnsweredIdx);
-            const targetQ = document.getElementById(`q-${unAnsweredIdx}`);
-            if (targetQ) {
-                const originalBg = targetQ.style.backgroundColor;
-                targetQ.style.backgroundColor = isDarkMode ? "#4a1d1d" : "#fff0f0";
-                setTimeout(() => { targetQ.style.backgroundColor = originalBg; }, 1500);
-            }
-        }
-    } else {
-        if (confirm("모든 문제를 풀었습니다. 제출하시겠습니까?")) {
-            processSubmit();
-        }
-    }
-};
-
-// [3] 실제 채점 프로세스 통합 함수
-function processSubmit() {
-    if (timerInterval) clearInterval(timerInterval);
-    let score = 0;
-    let wrongQuestions = []; 
-
-    currentQuestions.forEach((q, i) => {
-        const isCorrect = userAnswers[i] === q.answer;
-        const qBox = document.getElementById(`q-${i}`);
-        
-        if (qBox) {
-            const oldIcon = qBox.querySelector('.result-icon');
-            if (oldIcon) oldIcon.remove();
-
-            const icon = document.createElement('span');
-            icon.className = 'result-icon';
-            
-            if (isCorrect) {
-                score++;
-                qBox.classList.add('correct');
-                qBox.classList.remove('wrong');
-                icon.innerHTML = '✓';
-            } else {
-                wrongQuestions.push({ ...q, saveDate: new Date().getTime() });
-                qBox.classList.add('wrong');
-                qBox.classList.remove('correct');
-                icon.innerHTML = '✕';
-            }
-            
-            const qTitle = qBox.querySelector('.q-title strong');
-            if (qTitle) qTitle.prepend(icon);
-        }
-        
-        const omrNum = document.querySelector(`#omr-item-${i} .omr-q-num`);
-        if (omrNum) {
-            const darkModeActive = document.body.classList.contains("dark-mode");
-            if (darkModeActive) {
-                omrNum.style.setProperty('background-color', isCorrect ? '#1b4332' : '#4a1d1d', 'important');
-                omrNum.style.setProperty('color', isCorrect ? '#75f0a0' : '#ff8585', 'important');
-            } else {
-                omrNum.style.setProperty('background-color', isCorrect ? '#e6ffed' : '#ffeeee', 'important'); 
-                omrNum.style.setProperty('color', isCorrect ? "#28a745" : "#dc3545", 'important');
-            }
-        }
-        
-        const explainBox = document.getElementById(`explain-${i}`);
-        if (explainBox) explainBox.style.display = "block";
-    });
-
-    saveStudyRecord(lastQuizTitle, score, currentQuestions.length);
-    if (wrongQuestions.length > 0) saveWrongNotes(wrongQuestions);
-
-    const percent = Math.round((score / currentQuestions.length) * 100);
-    const scoreArea = document.getElementById("header-score-area");
-    if (scoreArea) {
-        scoreArea.style.display = "flex";
-        scoreArea.innerHTML = `
-            <span style="background: #ffeb3b; color: #1f3b73; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.9rem;">${percent}점</span>
-            <button onclick="retryCurrentQuiz()" style="margin-left:8px; background: white; border: 1px solid #1f3b73; color: #1f3b73; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">다시풀기</button>
-        `;
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    renderMenu(); 
-}
-
-function applyTheme() {
-    const btn = document.getElementById("dark-mode-toggle");
-    if (isDarkMode) {
-        document.body.classList.add("dark-mode");
-        if (btn) btn.innerHTML = "☀️ 라이트모드";
-    } else {
-        document.body.classList.remove("dark-mode");
-        if (btn) btn.innerHTML = "🌙 다크모드";
-    }
-}
-
-window.toggleDarkMode = () => {
-    isDarkMode = !isDarkMode;
-    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
-    applyTheme();
-};
-
-window.showStatsChart = () => {
-    const history = JSON.parse(localStorage.getItem("studyHistory")) || [];
-    const chartContainer = document.getElementById("chart-container");
-    const modal = document.getElementById("stats-modal");
-    
-    if (history.length === 0) return alert("통계를 표시할 기록이 없습니다.");
-
-    const recentData = history.slice(0, 10).reverse(); 
-    
-    chartContainer.innerHTML = recentData.map(h => {
-        const score = h.percent;
-        let barColor = "#3a63ad"; 
-        if (score >= 80) barColor = "#28a745"; 
-        if (score < 60) barColor = "#dc3545";  
-
-        return `
-            <div style="flex:1; display:flex; flex-direction:column; align-items:center; height: 100%; justify-content: flex-end; gap:5px; min-width: 0;">
-                <span style="font-size:0.65rem; font-weight:bold; color:${barColor}; white-space:nowrap;">${score}점</span>
-                <div style="width:70%; height:${score}%; background:${barColor}; border-radius:3px 3px 0 0; min-height:2px; transition: height 0.6s ease-out;"></div>
-                <span style="font-size:0.55rem; color:#888; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:center;" title="${h.roundName}">
-                    ${h.roundName.replace("심화 ", "")}
-                </span>
-                <span style="font-size:0.5rem; color:#bbb; margin-top:-3px;">${h.date}</span>
-            </div>
-        `;
-    }).join('');
-
-    const titleElement = modal.querySelector("strong");
-    if (titleElement) {
-        titleElement.onclick = window.handleAdminClick;
-        titleElement.style.cursor = "default";
-    }
-
-    const descText = modal.querySelector("div[style*='text-align:center']");
-    if (descText) descText.textContent = "오른쪽이 가장 최근 기록입니다.";
-
-    modal.style.display = "flex";
-};
-
-window.handleAdminClick = (event) => {
-    event.stopPropagation(); 
-    adminClickCount++;
-    if (adminClickTimer) clearTimeout(adminClickTimer);
-    adminClickTimer = setTimeout(() => { adminClickCount = 0; }, 2000);
-    
-    if (adminClickCount === 5) {
-        if (confirm("모든 학습 기록(성적 통계)을 초기화하시겠습니까?")) { 
-            localStorage.removeItem("studyHistory"); 
-            alert("기록이 초기화되었습니다.");
-            location.reload();
-        }
-        adminClickCount = 0;
-    }
-};
-
-window.closeStatsChart = () => {
-    document.getElementById("stats-modal").style.display = "none";
-};
-
-window.saveStudyRecord = (roundName, score, total) => {
-    const history = JSON.parse(localStorage.getItem("studyHistory")) || [];
-    const now = new Date();
-    history.unshift({
-        roundName,
-        percent: Math.round((score / total) * 100),
-        date: `${now.getMonth() + 1}/${now.getDate()}`,
-        time: `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`,
-        id: Date.now()
-    });
-    localStorage.setItem("studyHistory", JSON.stringify(history.slice(0, 30)));
-};
-
-window.startQuiz = (id) => {
-    const set = quizSets.find(s => s.id === id);
-    if (!set) return;
-    let data = JSON.parse(JSON.stringify(set.repairData));
-    data.forEach(q => q.fromRound = set.roundName); 
-    currentQuestions = shuffleLogic(data); 
-    startQuizProcess(set.roundName);
-};
-
-window.startIntegratedRandom = () => {
-    const all = quizSets.flatMap(s => (s.repairData || []).map(q => ({ ...q, fromRound: s.roundName })));
-    if (all.length === 0) return alert("데이터가 없습니다.");
-    currentQuestions = shuffleLogic(all).slice(0, 80); 
-    startQuizProcess("🎲 통합 랜덤 (80문항)");
-};
-
-window.startWrongNote = (name) => {
-    const all = JSON.parse(localStorage.getItem("myWrongNotesV2")) || {};
-    const data = all[name];
-    if (!data || data.length === 0) return alert("오답이 없습니다.");
-    currentQuestions = shuffleLogic(data);
-    startQuizProcess(`📕 오답 복습: ${name}`);
-};
-
-function renderQuiz() {
-    const container = document.getElementById("quiz");
-    const quizContent = currentQuestions.map((q, i) => {
-        const wrongBadge = (q.wrongCount && q.wrongCount >= 2) 
-            ? `<span style="background:#dc3545; color:white; padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-right:5px; vertical-align:middle; display:inline-block;">${q.wrongCount}회 오답</span>` 
-            : "";
-
-        return `
-            <div class="question" id="q-${i}" style="margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
-                <div class="round-name" style="font-size: 0.75rem; color: #888; margin-bottom: 5px;">${q.fromRound || lastQuizTitle}</div>
-                <div class="q-title">
-                    <strong>${i + 1}. ${wrongBadge}${q.question}</strong>
-                </div>
-                <div class="options" style="margin-top:15px;">
-                    ${q.options.map((opt, j) => `
-                        <label id="label-${i}-${j}" style="display:block; margin-bottom:8px; padding:12px; border:1px solid var(--option-border); border-radius:8px; cursor:pointer;">
-                            <input type="radio" name="q${i}" value="${j}" onchange="selectAnswer(${i}, ${j})" style="margin-right:8px;"> ${opt}
-                        </label>
-                    `).join('')}
-                </div>
-                <div class="explain" id="explain-${i}" style="display:none; margin-top:15px; padding:15px; border-left:5px solid var(--status-border);">
-                    <strong>정답: ${q.options[q.answer]}</strong><br>
-                    <small>${q.explain || '해설이 없습니다.'}</small>
-                </div>
-            </div>
-        `;
-    }).join('');
-
-    const finalSubmitHtml = `
-        <div class="quiz-final-submit-area">
-            <button type="button" class="quiz-final-submit-btn" onclick="submitQuiz()">
-                📝 시험 제출하고 채점하기
-            </button>
-        </div>
-    `;
-
-    container.innerHTML = quizContent + finalSubmitHtml;
-    userAnswers = Array(currentQuestions.length).fill(-1);
-    window.scrollTo(0, 0);
-    renderOMR(); 
-    updateStatus();
-}
-
-function saveWrongNotes(newWrongs) {
-    const all = JSON.parse(localStorage.getItem("myWrongNotesV2")) || {};
-    newWrongs.forEach(newQ => {
-        const round = newQ.fromRound || "미분류";
-        if (!all[round]) all[round] = [];
-        const existing = all[round].find(q => q.question === newQ.question);
-        if (existing) existing.wrongCount = (existing.wrongCount || 1) + 1;
-        else { newQ.wrongCount = 1; all[round].push(newQ); }
-    });
-    localStorage.setItem("myWrongNotesV2", JSON.stringify(all));
-}
-
-window.clearRound = (name) => {
-    if (!confirm(`${name} 삭제?`)) return;
-    const all = JSON.parse(localStorage.getItem("myWrongNotesV2")) || {};
-    delete all[name];
-    localStorage.setItem("myWrongNotesV2", JSON.stringify(all));
-    renderMenu();
-};
-
-function updateStatus() {
-    const done = userAnswers.filter(a => a !== -1).length;
-    const remaining = document.getElementById("remaining");
-    if(remaining) remaining.textContent = `진행도: ${done} / ${currentQuestions.length}`;
-}
-
-window.selectAnswer = (qIdx, aIdx) => {
+function selectAnswer(qIdx, aIdx) {
+    const isInstant = document.getElementById('setting-instant-feedback').checked;
+    if (isInstant && userAnswers[qIdx] !== undefined) return;
     userAnswers[qIdx] = aIdx;
-    updateStatus();
-
-    const darkModeActive = document.body.classList.contains("dark-mode");
-
-    document.querySelectorAll(`#q-${qIdx} label`).forEach(l => {
-        if (darkModeActive) {
-            l.style.setProperty('background', '#2a2a2a', 'important');
-            l.style.setProperty('color', '#e0e0e0', 'important');
-            l.style.setProperty('border-color', '#444', 'important');
-        } else {
-            l.style.setProperty('background', '#f9fafc', 'important');
-            l.style.setProperty('color', '#222', 'important');
-            l.style.setProperty('border-color', '#d9e2ef', 'important');
-        }
-    });
-
-    const selectedLabel = document.getElementById(`label-${qIdx}-${aIdx}`);
-    if (selectedLabel) {
-        if (darkModeActive) {
-            selectedLabel.style.setProperty('background', '#1a3a5f', 'important');
-            selectedLabel.style.setProperty('color', '#ffffff', 'important');
-            selectedLabel.style.setProperty('border-color', '#3a86ff', 'important');
-        } else {
-            selectedLabel.style.setProperty('background', '#e0f7ff', 'important');
-            selectedLabel.style.setProperty('color', '#000000', 'important');
-            selectedLabel.style.setProperty('border-color', '#00bcd4', 'important');
+    const block = document.getElementById(`q-block-${qIdx}`);
+    if (block) {
+        block.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+        const target = block.querySelector(`#opt-${qIdx}-${aIdx}`);
+        if(target) target.classList.add('selected');
+        if (isInstant) {
+            const feedback = block.querySelector(`#feedback-${qIdx}`);
+            const tag = block.querySelector(`#instant-tag-${qIdx}`);
+            const isCorrect = questions[qIdx].options[aIdx] === questions[qIdx].correctAnswerText;
+            feedback.classList.remove('hidden');
+            tag.innerHTML = isCorrect ? '<strong style="color:var(--success-green)">✅ 정답입니다!</strong>' : '<strong style="color:var(--accent-red)">❌ 틀렸습니다.</strong>';
         }
     }
-
-    document.querySelectorAll(`#omr-item-${qIdx} .omr-option`).forEach(opt => { 
-        opt.style.background = darkModeActive ? '#1e1e1e' : 'white'; 
-    });
-    const sel = document.getElementById(`omr-opt-${qIdx}-${aIdx}`);
-    if (sel) { 
-        sel.style.background = darkModeActive ? '#3a5ba0' : '#1f3b73'; 
-        sel.style.color = 'white'; 
-    }
-
-    if (window.innerWidth <= 768) {
-        const omr = document.getElementById("omr-card");
-        if (omr.classList.contains("active")) toggleMobileOMR();
-    }
-
-    if (qIdx < currentQuestions.length - 1) {
+    updateOMRMark(qIdx, aIdx);
+    updateProgressDisplay();
+    if (document.getElementById('setting-auto-scroll').checked && !isInstant) {
         setTimeout(() => {
-            const next = document.getElementById(`q-${qIdx + 1}`);
-            if (next) next.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 500);
+            if (document.getElementById('setting-one-by-one').checked) { moveQuestion(1); }
+            else {
+                const nextBlock = document.getElementById(`q-block-${qIdx + 1}`);
+                if (nextBlock) nextBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 300);
     }
-};
+}
+
+function updateProgressDisplay() {
+    const solved = Object.keys(userAnswers).length; 
+    const total = questions.length;
+    const solvedEl = document.getElementById('solved-count');
+    const totalEl = document.getElementById('total-count');
+    const displayEl = document.getElementById('progress-display');
+    if (solvedEl && totalEl) { solvedEl.textContent = solved; totalEl.textContent = total; }
+    else if (displayEl) { displayEl.textContent = solved + " / " + total; }
+}
+
+function handleFinishSubmit() {
+    const unsolvedCount = questions.length - Object.keys(userAnswers).length;
+    if (unsolvedCount > 0) {
+        if (confirm(`미풀이 문제가 ${unsolvedCount}개 있습니다. 제출하시겠습니까?`)) { finalizeExam(); }
+        else {
+            const firstUnsolved = questions.findIndex((_, i) => userAnswers[i] === undefined);
+            if (firstUnsolved !== -1) jumpTo(firstUnsolved);
+        }
+    } else { finalizeExam(); }
+}
+
+function finalizeExam() {
+    if(timerInterval) clearInterval(timerInterval);
+    let scoreCount = 0;
+    const reviewContainer = document.getElementById('review-list-container');
+    reviewContainer.innerHTML = '';
+    const currentWrongs = [];
+    const resultOmrGrid = document.getElementById('result-omr-buttons-grid');
+    let resultOmrHtml = '';
+
+    questions.forEach((q, i) => {
+        const userPickText = q.options[userAnswers[i]];
+        const isCorrect = userPickText === q.correctAnswerText;
+        if (isCorrect) { scoreCount++; } 
+        else { currentWrongs.push({...q, options: q.options}); }
+        
+        // 결과 리스트 카드 생성
+        const card = document.createElement('div');
+        card.className = `review-card glass-card ${isCorrect ? 'correct' : 'wrong'}`;
+        card.id = `review-card-${i}`; // 이동을 위한 ID
+        card.style.borderLeft = `10px solid ${isCorrect ? 'var(--success-green)' : 'var(--accent-red)'}`;
+        card.style.padding = '20px'; card.style.marginBottom = '15px';
+        card.innerHTML = `<h4>${isCorrect ? '✅' : '❌'} Q${i + 1}. ${q.question}</h4><p>나의 선택: ${userPickText || '미선택'}</p><p><strong>정답: ${q.correctAnswerText}</strong></p><p>해설: ${q.explain}</p>`;
+        reviewContainer.appendChild(card);
+
+        // 결과 화면 OMR HTML 생성
+        const num = (i + 1).toString().padStart(2, '0');
+        resultOmrHtml += `
+            <div class="omr-row-item ${isCorrect ? 'res-correct' : 'res-wrong'}" onclick="document.getElementById('review-card-${i}').scrollIntoView({behavior:'smooth', block:'center'})">
+                <span class="omr-num">${num}번</span>
+                <div class="omr-circles">
+                    ${[0,1,2,3].map(v => `<span class="circle-dot ${userAnswers[i] === v ? 'filled' : ''}">${v+1}</span>`).join('')}
+                </div>
+            </div>
+        `;
+    });
+
+    if(resultOmrGrid) resultOmrGrid.innerHTML = resultOmrHtml;
+    const finalScore = (scoreCount / questions.length) * 100;
+    lastUsedExamData = JSON.parse(JSON.stringify(questions)); 
+    lastWrongAnswers = JSON.parse(JSON.stringify(currentWrongs));
+    saveScoreToHistory(finalScore, questions[0].originalRound);
+    saveWrongNotes(currentWrongs);
+    document.getElementById('quiz-screen').classList.add('hidden');
+    document.getElementById('quiz-status-area').classList.add('hidden');
+    document.getElementById('result-screen').classList.remove('hidden');
+    document.getElementById('final-result-score').innerText = finalScore.toFixed(2);
+    window.history.pushState(null, null, window.location.href);
+    window.scrollTo(0, 0);
+}
+
+function handleOverlayClick(e) { if (e.target.id === 'modal-stats-overlay') closeStatsModal(); }
+
+function retryCurrentExam(wrongOnly) {
+    let targetList = [];
+    if (wrongOnly) {
+        if (lastWrongAnswers.length === 0) return alert("틀린 문제가 없습니다!");
+        targetList = JSON.parse(JSON.stringify(lastWrongAnswers));
+    } else {
+        targetList = JSON.parse(JSON.stringify(lastUsedExamData));
+    }
+    questions = targetList.map(q => ({ ...q, options: shuffle([...q.options]) }));
+    questions = shuffle(questions);
+    document.getElementById('result-screen').classList.add('hidden');
+    launchQuiz();
+}
 
 function renderOMR() {
-    const omrList = document.getElementById("omr-list");
-    omrList.innerHTML = currentQuestions.map((_, i) => `
-        <div class="omr-item" id="omr-item-${i}">
-            <span class="omr-q-num" onclick="scrollToQ(${i})">${i + 1}</span>
-            <div class="omr-options-wrapper">${[0, 1, 2, 3].map(v => `<span class="omr-option" id="omr-opt-${i}-${v}" onclick="selectAnswer(${i}, ${v}); syncRadio(${i}, ${v})"></span>`).join('')}</div>
+    const grid = document.getElementById('omr-buttons-grid');
+    if (!grid || window.innerWidth <= 1024) return;
+    grid.innerHTML = questions.map((_, i) => {
+        const num = (i + 1).toString().padStart(2, '0');
+        return `
+            <div class="omr-row-item ${userAnswers[i] !== undefined ? 'solved' : ''}" id="omr-row-${i}" onclick="jumpTo(${i})">
+                <span class="omr-num">${num}번</span>
+                <div class="omr-circles">
+                    ${[0,1,2,3].map(v => `<span class="circle-dot ${userAnswers[i] === v ? 'filled' : ''}" id="dot-${i}-${v}" onclick="event.stopPropagation(); selectAnswer(${i}, ${v});">${v+1}</span>`).join('')}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function updateOMRMark(qIdx, aIdx) {
+    const row = document.getElementById(`omr-row-${qIdx}`);
+    if (row) {
+        row.classList.add('solved');
+        row.querySelectorAll('.circle-dot').forEach((dot, i) => { dot.classList.toggle('filled', i === aIdx); });
+    }
+    const el = document.getElementById('omr-status-txt');
+    if (el) { el.innerText = `${Object.keys(userAnswers).length} / ${questions.length}`; }
+}
+
+function pushAllAnswers(answerIdx) {
+    if(!confirm(`${answerIdx + 1}번으로 모든 미풀이 문제를 밀겠습니까?`)) return;
+    questions.forEach((_, i) => { if (userAnswers[i] === undefined) { selectAnswer(i, answerIdx); } });
+}
+
+function moveQuestion(dir) {
+    const next = currentIdx + dir;
+    if (next >= 0 && next < questions.length) { currentIdx = next; renderQuestion(); window.scrollTo(0, 0); }
+}
+
+function jumpTo(idx) {
+    currentIdx = idx;
+    if (document.getElementById('setting-one-by-one').checked) { renderQuestion(); }
+    else {
+        const targetBlock = document.getElementById(`q-block-${idx}`);
+        if(targetBlock) targetBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
+
+function startTimer() { 
+    let time = 3600; 
+    if(timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => { 
+        time--; let m = Math.floor(time/60); let s = time%60; 
+        const el = document.getElementById('timer-display');
+        if(el) el.innerText = `${m}:${s<10?'0':''}${s}`; 
+        if(time<=0) finalizeExam(); 
+    }, 1000); 
+}
+
+function updateFontSize(size) {
+    const body = document.getElementById('main-body');
+    body.classList.remove('font-small', 'font-medium', 'font-large');
+    body.classList.add(`font-${size}`);
+    document.querySelectorAll('.btn-f-size').forEach(b => b.classList.remove('active'));
+    document.getElementById(`fs-${size}`).classList.add('active');
+    localStorage.setItem('cbt_font_size', size);
+}
+
+function toggleTheme() {
+    const body = document.getElementById('main-body');
+    const isDark = body.classList.toggle('dark-mode');
+    localStorage.setItem('cbt_theme', isDark ? 'dark' : 'light');
+    document.getElementById('theme-btn').innerText = isDark ? '☀️ 라이트' : '🌙 다크';
+}
+
+function highlightOMRRow() {
+    document.querySelectorAll('.omr-row-item').forEach(r => r.classList.remove('active'));
+    const target = document.getElementById(`omr-row-${currentIdx}`);
+    if (target) target.classList.add('active');
+}
+
+function applyLeftHand(isOn) { document.getElementById('quiz-nav-group').classList.toggle('left-hand-mode-active', isOn); }
+function toggleViewMode() { if(questions.length > 0) launchQuiz(); }
+function syncInstantMode(el) { if(el.checked) document.getElementById('setting-one-by-one').checked = true; if(questions.length > 0) launchQuiz(); }
+
+function toggleWrongAccordion() {
+    const body = document.getElementById('wrong-content-area');
+    body.classList.toggle('hidden');
+    const arrow = document.getElementById('wrong-arrow-icon');
+    if(arrow) arrow.innerText = body.classList.contains('hidden') ? '▼' : '▲';
+}
+
+function updateStatsDashboard() {
+    let history = JSON.parse(localStorage.getItem('cbt_history_v4') || '[]');
+    if (history.length > 0) {
+        document.getElementById('stat-last').innerText = history[history.length-1].score.toFixed(2);
+        document.getElementById('stat-avg').innerText = (history.reduce((a,b)=>a+b.score,0)/history.length).toFixed(2);
+    }
+}
+
+function saveScoreToHistory(score, roundName) {
+    let history = JSON.parse(localStorage.getItem('cbt_history_v4') || '[]');
+    const now = new Date();
+    const timeStr = `${now.getMonth() + 1}월 ${now.getDate()}일 ${now.getHours()}시 ${now.getMinutes()}분`;
+    history.push({ score, roundName, date: timeStr });
+    localStorage.setItem('cbt_history_v4', JSON.stringify(history.slice(-10)));
+    updateStatsDashboard();
+}
+
+function saveWrongNotes(wrongs) {
+    if (wrongs.length === 0) return;
+    let data = JSON.parse(localStorage.getItem('cbt_wrong_v4') || '{}');
+    wrongs.forEach(q => {
+        const round = q.originalRound || "기타";
+        if (!data[round]) data[round] = [];
+        const existingIdx = data[round].findIndex(e => e.question === q.question);
+        if (existingIdx !== -1) { data[round][existingIdx].wrongCount = (data[round][existingIdx].wrongCount || 1) + 1; }
+        else { q.wrongCount = 1; data[round].push(q); }
+    });
+    localStorage.setItem('cbt_wrong_v4', JSON.stringify(data));
+    renderWrongNoteArea();
+}
+
+function renderWrongNoteArea() {
+    const container = document.getElementById('wrong-list-display');
+    const data = JSON.parse(localStorage.getItem('cbt_wrong_v4') || '{}');
+    const rounds = Object.keys(data).sort((a, b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
+    if (rounds.length === 0) {
+        container.innerHTML = '<p style="padding:20px; text-align:center; color:var(--text-secondary);">기록 없음</p>';
+        const multiBtn = document.getElementById('btn-wrong-multi-start');
+        if(multiBtn) multiBtn.classList.add('hidden');
+        return;
+    }
+    container.innerHTML = rounds.map(r => `
+        <div class="wrong-item-row" id="wrong-row-${r}">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="toggleWrongSelection('${r}')">
+                    <input type="checkbox" class="wrong-chk" value="${r}" id="chk-${r}" onclick="event.stopPropagation(); updateWrongStartBtn();">
+                    <span style="font-weight:700;">${r} <small style="color:var(--accent-red)">(${data[r].length})</small></span>
+                </div>
+                <div><button onclick="startWrongReview('${r}')" style="background:var(--accent-blue); color:white; padding:4px 8px; border-radius:6px; font-size:0.75rem;">단독 풀기</button><button class="btn-round-del" onclick="deleteWrongRound('${r}')">삭제</button></div>
+            </div>
         </div>
     `).join('');
+    updateWrongStartBtn();
 }
 
-window.scrollToQ = (i) => document.getElementById(`q-${i}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
-window.syncRadio = (q, v) => { const r = document.querySelector(`input[name="q${q}"][value="${v}"]`); if (r) r.checked = true; };
-window.fillAll = (val) => {
-    currentQuestions.forEach((_, i) => {
-        window.selectAnswer(i, val);
-        const r = document.querySelector(`input[name="q${i}"][value="${val}"]`);
-        if (r) r.checked = true;
-    });
-    window.scrollToQ(0);
-};
-
-document.addEventListener("DOMContentLoaded", () => {
-    const btn = document.getElementById("submitBtn");
-    if (btn) btn.onclick = window.submitQuiz;
-    
-    window.addEventListener('click', (e) => {
-        const modal = document.getElementById("stats-modal");
-        if (e.target === modal) modal.style.display = "none";
-    });
-});
-
-function startTimer() {
-    if (timerInterval) clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-        timeLeft--;
-        const timer = document.getElementById("timer");
-        if (timer) timer.textContent = `남은 시간: ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
-        if (timeLeft <= 0) { clearInterval(timerInterval); window.submitQuiz(); }
-    }, 1000);
+function toggleWrongSelection(roundName) {
+    const chk = document.getElementById(`chk-${roundName}`);
+    const row = document.getElementById(`wrong-row-${roundName}`);
+    if(chk) chk.checked = !chk.checked;
+    if(row) row.classList.toggle('selected', chk ? chk.checked : false);
+    updateWrongStartBtn();
 }
 
-window.toggleWrongNoteList = () => {
-    const list = document.getElementById("wrong-note-list");
-    const arrow = document.getElementById("wrong-arrow");
-    if (list.style.display === "none") { list.style.display = "block"; arrow.style.transform = "rotate(180deg)"; }
-    else { list.style.display = "none"; arrow.style.transform = "rotate(0deg)"; }
-};
+function updateWrongStartBtn() {
+    const selectedCount = document.querySelectorAll('.wrong-chk:checked').length;
+    const btn = document.getElementById('btn-wrong-multi-start');
+    if (btn) { if (selectedCount > 0) { btn.classList.remove('hidden'); btn.innerText = `🚀 선택 ${selectedCount}개 모아풀기`; } else { btn.classList.add('hidden'); } }
+}
 
-window.toggleMobileOMR = () => {
-    const omr = document.getElementById("omr-card");
-    const overlay = document.getElementById("omr-overlay");
-    const toggleBtn = document.getElementById("mobile-omr-toggle");
+function startMultiWrongReview() {
+    const data = JSON.parse(localStorage.getItem('cbt_wrong_v4') || '{}');
+    const selectedRounds = Array.from(document.querySelectorAll('.wrong-chk:checked')).map(chk => chk.value);
+    if (selectedRounds.length === 0) return;
+    let pool = [];
+    const targetTotal = 80;
+    const perSet = Math.floor(targetTotal / selectedRounds.length);
+    let extra = targetTotal % selectedRounds.length;
+    selectedRounds.forEach(roundName => {
+        if (data[roundName]) {
+            let count = perSet + (extra > 0 ? 1 : 0);
+            extra--;
+            let shuffledWrongSet = shuffle([...data[roundName]]);
+            pool.push(...shuffledWrongSet.slice(0, count));
+        }
+    });
+    if (pool.length === 0) return;
+    const finalPool = shuffle(pool).map(q => ({ ...q, options: shuffle([...q.options]) }));
+    questions = finalPool;
+    lastUsedExamData = JSON.parse(JSON.stringify(finalPool));
+    launchQuiz();
+}
 
-    const isActive = omr.classList.toggle("active");
-    overlay.classList.toggle("active");
+function deleteWrongRound(roundName) {
+    if (confirm(`'${roundName}' 회차의 오답 기록을 삭제하시겠습니까?`)) {
+        let data = JSON.parse(localStorage.getItem('cbt_wrong_v4') || '{}');
+        delete data[roundName];
+        localStorage.setItem('cbt_wrong_v4', JSON.stringify(data));
+        renderWrongNoteArea();
+    }
+}
 
-    toggleBtn.innerHTML = isActive ? "✕" : "📝";
-    toggleBtn.style.background = isActive ? "#dc3545" : "#1f3b73";
-};
+function startWrongReview(roundName) {
+    const data = JSON.parse(localStorage.getItem('cbt_wrong_v4') || '{}');
+    const wrongList = shuffle(data[roundName]).map(q => ({ ...q, options: shuffle([...q.options]) }));
+    questions = wrongList;
+    lastUsedExamData = JSON.parse(JSON.stringify(wrongList));
+    launchQuiz();
+}
 
-init();
+function clearAllWrongs() { if(confirm("모든 오답 기록을 초기화하시겠습니까?")) { localStorage.removeItem('cbt_wrong_v4'); renderWrongNoteArea(); } }
+
+function openStatsModal() {
+    document.getElementById('modal-stats-overlay').classList.remove('hidden');
+    let history = JSON.parse(localStorage.getItem('cbt_history_v4') || '[]');
+    const container = document.getElementById('chart-canvas-area');
+    if (history.length === 0) { container.innerHTML = '<p style="padding:50px;">데이터가 없습니다.</p>'; return; }
+    container.innerHTML = history.map(h => `<div class="chart-bar" style="height: ${h.score}%"><span class="bar-score">${h.score.toFixed(2)}점</span><span class="bar-label">${h.roundName}<br><small style="font-size:0.6rem; color:#888;">${h.date || ''}</small></span></div>`).join('');
+    const scrollBox = document.getElementById('chart-scroll-box');
+    setTimeout(() => { if(scrollBox) scrollBox.scrollLeft = scrollBox.scrollWidth; }, 50);
+}
+
+function closeStatsModal() { document.getElementById('modal-stats-overlay').classList.add('hidden'); }
+
+function handleSecretReset() { if (++secretResetCount >= 5) { if (confirm("초기화하시겠습니까?")) { localStorage.removeItem('cbt_history_v4'); location.reload(); } secretResetCount = 0; } }
